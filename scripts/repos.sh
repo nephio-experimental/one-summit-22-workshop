@@ -45,11 +45,11 @@ if [[ $DEBUG == "true" ]]; then
   gh="echo $gh"
 fi
 
-token_file=$HOME/nephio-test-github-pat.txt
+token_file="$HOME/nephio-test-github-pat.txt"
 export GH_TOKEN=${GH_TOKEN:-}
 
 if [[ -z $GH_TOKEN && -f $token_file ]]; then
-  GH_TOKEN=$(<$token_file)
+  GH_TOKEN=$(<"$token_file")
 fi
 
 if [[ -z $GH_TOKEN ]]; then
@@ -57,12 +57,11 @@ if [[ -z $GH_TOKEN ]]; then
   exit 1
 fi
 
-declare -A repos
-repos="org regional-01 aggr-01 aggr-02"
+repos=(org regional-01 aggr-01 aggr-02)
 
-for p in $* ; do
-  for r in $repos; do
-    $gh $p-$r
+for p in $*; do
+  for r in ${repos[@]}; do
+    $gh "$p-$r"
   done
 done
 
