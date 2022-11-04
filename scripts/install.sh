@@ -53,7 +53,7 @@ EONG
 }
 
 for cluster in "${!clusters[@]}"; do
-    read -a subnets <<<"${clusters[$cluster]//,/ }"
+    read -r -a subnets <<<"${clusters[$cluster]//,/ }"
     deploy_k8s_cluster "$cluster" "${subnets[0]}" "${subnets[1]}" "${subnets[2]}"
 done
 
