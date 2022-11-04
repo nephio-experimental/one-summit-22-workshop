@@ -22,46 +22,45 @@ if [[ $DEBUG == "true" ]]; then
 fi
 
 function usage {
-  echo "usage: $0 { create | delete } participant ..."
-  exit 1
+    echo "usage: $0 { create | delete } participant ..."
+    exit 1
 }
 
 if [[ $# -lt 2 ]]; then
-  usage
+    usage
 fi
 
 cmd=$1
 shift
 
 if [[ $cmd == "create" ]]; then
-  gh="gh repo create --public "
+    gh="gh repo create --public "
 elif [[ $cmd == "delete" ]]; then
-  gh="gh repo delete --confirm "
+    gh="gh repo delete --confirm "
 else
-  usage
+    usage
 fi
 
 if [[ $DEBUG == "true" ]]; then
-  gh="echo $gh"
+    gh="echo $gh"
 fi
 
 token_file="$HOME/nephio-test-github-pat.txt"
 export GH_TOKEN=${GH_TOKEN:-}
 
 if [[ -z $GH_TOKEN && -f $token_file ]]; then
-  GH_TOKEN=$(<"$token_file")
+    GH_TOKEN=$(<"$token_file")
 fi
 
 if [[ -z $GH_TOKEN ]]; then
-  echo "GH_TOKEN must be set or $token_file must contain it"
-  exit 1
+    echo "GH_TOKEN must be set or $token_file must contain it"
+    exit 1
 fi
 
 repos=(org regional-01 aggr-01 aggr-02)
 
 for p in $*; do
-  for r in ${repos[@]}; do
-    $gh "$p-$r"
-  done
+    for r in ${repos[@]}; do
+        $gh "$p-$r"
+    done
 done
-
