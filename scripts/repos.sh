@@ -59,8 +59,8 @@ fi
 
 repos=(org regional-01 aggr-01 aggr-02)
 
-for p in $*; do
-    for r in ${repos[@]}; do
+for p in "$@"; do
+    for r in "${repos[@]}"; do
         $gh "$p-$r"
     done
 done
