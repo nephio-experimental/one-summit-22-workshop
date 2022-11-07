@@ -57,7 +57,7 @@ if [[ -z $GH_TOKEN ]]; then
     exit 1
 fi
 
-repos=(org regional-01 aggr-01 aggr-02)
+repos=(catalog regional edge-1 edge-2)
 
 for p in "$@"; do
     for r in "${repos[@]}"; do
