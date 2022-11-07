@@ -47,6 +47,9 @@ networking:
   serviceSubnet: "$svc_subnet"
 nodes:
   - role: control-plane
+  - role: worker
+  - role: worker
+  - role: worker
 EOF
 fi
 EONG
