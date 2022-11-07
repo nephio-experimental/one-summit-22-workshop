@@ -16,8 +16,9 @@ locals {
 
 # Compute Instances Creation
 module "compute_instances" {
-  for_each            = { for compute_instances in local.compute_instances : "${compute_instances.name}" => compute_instances }
+  for_each            = { for compute_instances in local.compute_instances : compute_instances.name => compute_instances }
   source              = "terraform-google-modules/vm/google//modules/compute_instance"
+  version             = "7.9.0"
   hostname            = each.key
   region              = each.value.region
   zone                = each.value.zone

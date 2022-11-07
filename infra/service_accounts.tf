@@ -17,6 +17,7 @@ locals {
 module "service_accounts" {
   for_each      = local.service_accounts
   source        = "terraform-google-modules/service-accounts/google"
+  version       = "4.1.1"
   project_id    = var.project_id
   prefix        = each.key
   names         = each.value.names

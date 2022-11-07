@@ -32,6 +32,7 @@ locals {
 module "subnets" {
   for_each     = local.subnets
   source       = "terraform-google-modules/network/google//modules/subnets"
+  version      = "5.2.0"
   project_id   = var.project_id
   network_name = each.key
   subnets      = each.value.subnets

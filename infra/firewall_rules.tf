@@ -32,6 +32,7 @@ locals {
 module "firewall_rules" {
   for_each     = local.firewall_rules
   source       = "terraform-google-modules/network/google//modules/firewall-rules"
+  version      = "5.2.0"
   project_id   = var.project_id
   network_name = each.key
   rules        = each.value.rules

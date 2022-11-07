@@ -44,8 +44,9 @@ locals {
 
 # Instance Templates Creation
 module "instance_templates" {
-  for_each             = { for instance_templates in local.instance_templates : "${instance_templates.name}" => instance_templates }
+  for_each             = { for instance_templates in local.instance_templates : instance_templates.name => instance_templates }
   source               = "terraform-google-modules/vm/google//modules/instance_template"
+  version              = "7.9.0"
   project_id           = var.project_id
   name_prefix          = each.key
   region               = each.value.region
