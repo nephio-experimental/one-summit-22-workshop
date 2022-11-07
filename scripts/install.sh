@@ -59,8 +59,29 @@ nodes:
     image: kindest/node:v$PKG_KUBECTL_VERSION
 EOF
 fi
+docker network connect --ip "${node_subnet%.*}.254" net-$name wan
 EONG
+    nodeIP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
+    wan_exec "ip route add $pod_subnet via $nodeIP"
+    wan_exec "ip route add $svc_subnet via $nodeIP"
 }
+
+function wan_exec {
+    local cmd="$1"
+
+    if [[ -z $(sudo docker ps -aqf "name=wan") ]]; then
+        sudo docker run -d --sysctl=net.ipv4.ip_forward=1 \
+            --sysctl=net.ipv4.conf.all.rp_filter=0 \
+            --privileged --name wan wanem:0.0.1
+    fi
+    sudo docker exec wan sh -c "$cmd"
+}
+
+# Create WAN emulator to interconnect clusters
+if [ -z "$(sudo docker images wanem:0.0.1 -q)" ]; then
+    sudo docker build -t wanem:0.0.1 .
+fi
+wan_exec "iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE"
 
 for cluster in "${!clusters[@]}"; do
     read -r -a subnets <<<"${clusters[$cluster]//,/ }"
