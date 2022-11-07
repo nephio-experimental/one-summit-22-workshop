@@ -29,6 +29,11 @@ clusters=(
 # NOTE: Shorten link -> https://github.com/electrocucaracha/pkg-mgr_scripts
 curl -fsSL http://bit.ly/install_pkg | PKG_COMMANDS_LIST="kind,docker,kubectl" bash
 
+if ! command -v kpt; then
+    curl -s https://i.jpillora.com/GoogleContainerTools/kpt@v1.0.0-beta.23 ! | bash
+    kpt completion bash | sudo tee /etc/bash_completion.d/kpt >/dev/null
+fi
+
 function deploy_k8s_cluster {
     local name="$1"
     local node_subnet="$2"
