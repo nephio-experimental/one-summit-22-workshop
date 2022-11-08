@@ -185,7 +185,7 @@ function util::wait_for_condition() {
   local timeout=${3:-}
 
   local start_msg="Waiting for ${msg}"
-  local error_msg="[ERROR] Timeout waiting for ${msg}"
+  #local error_msg="[ERROR] Timeout waiting for ${msg}"
 
   local counter=0
   while ! eval "${condition}" | grep "${msg}"; do
@@ -200,7 +200,7 @@ function util::wait_for_condition() {
       fi
       sleep 1
     else
-      echo -e "\n${error_msg}"
+      echo -e "\n[ERROR] Timeout waiting for condition."
       return 1
     fi
   done
