@@ -7,7 +7,7 @@ set -o pipefail
 # 1. used by developer to setup develop environment quickly.
 # 2. used by e2e testing to setup test environment automatically.
 
-# shellcheck source=util.sh
+# shellcheck source=/dev/null
 source util.sh
 
 # variable define
