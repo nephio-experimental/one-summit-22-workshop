@@ -1,0 +1,8 @@
+{
+  "Metadata": {
+    "name": "{{name}}", 
+    "description": "description of clustername",
+    "userData1": "$clustername user data 1",
+    "userData2": "$clustername user data 2"
+  }
+}
