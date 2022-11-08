@@ -8,7 +8,8 @@ set -o pipefail
 # 2. used by e2e testing to setup test environment automatically.
 
 # shellcheck source=/dev/null
-source util.sh
+REPO_ROOT=$(dirname "${BASH_SOURCE[0]}")
+source "${REPO_ROOT}"/util.sh
 
 # variable define
 KUBECONFIG_PATH=${KUBECONFIG_PATH:-"${HOME}/.kube"}
