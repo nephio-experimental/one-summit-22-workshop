@@ -7,8 +7,9 @@ set -o pipefail
 # 1. used by developer to setup develop environment quickly.
 # 2. used by e2e testing to setup test environment automatically.
 
-# shellcheck source=/dev/null
+
 REPO_ROOT=$(dirname "${BASH_SOURCE[0]}")
+# shellcheck source=/dev/null
 source "${REPO_ROOT}"/util.sh
 
 # variable define
