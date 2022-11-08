@@ -14,7 +14,7 @@ This is the ansible playbook for,
 - [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#pip-install)
 
 ## Prerequisites
-- Terraform plan executed alredy.
+- Terraform plan executed already.
 - External IP address of the GCP VM.
 - ssh key for loging in to the VM. FIXME I am using the the key called google_compute_engine which is getting created after I execute "gcloud compute ssh --zone "us-central1-a" "nephio-poc-001"  --project "pure-faculty-367518"gcloud compute ssh --zone "us-central1-a" "nephio-poc-001"  --project "pure-faculty-367518"" 
 
