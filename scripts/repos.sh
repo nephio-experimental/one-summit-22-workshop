@@ -46,7 +46,7 @@ if [[ $DEBUG == "true" ]]; then
 fi
 
 token_file="$HOME/nephio-test-github-pat.txt"
-export GH_TOKEN=${GH_TOKEN:-}
+export GH_TOKEN=${GH_TOKEN-}
 
 if [[ -z $GH_TOKEN && -f $token_file ]]; then
     GH_TOKEN=$(<"$token_file")
