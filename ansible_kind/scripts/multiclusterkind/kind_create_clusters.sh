@@ -4,12 +4,11 @@ set -o nounset
 set -o pipefail
 
 # Parameters: [HOST_IPADDRESS](optional) if you want to export clusters' API server port to specific IP address
-# This script depends on utils in: ${REPO_ROOT}/hack/util.sh
 # 1. used by developer to setup develop environment quickly.
 # 2. used by e2e testing to setup test environment automatically.
 
-REPO_ROOT=$(dirname "${BASH_SOURCE[0]}")
-source "${REPO_ROOT}"/hack/util.sh
+# shellcheck source=util.sh
+source util.sh
 
 # variable define
 KUBECONFIG_PATH=${KUBECONFIG_PATH:-"${HOME}/.kube"}
