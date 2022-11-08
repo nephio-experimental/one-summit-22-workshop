@@ -16,13 +16,13 @@ This is the ansible playbook for,
 ## Prerequisites
 - Terraform plan executed alredy.
 - External IP address of the GCP VM.
-- ssh key for loging in to the VM. FIXME I am using the the key called google_compute_engine which is getting created after I execute "gcloud compute ssh --zone "us-central1-a" "nephio-poc-001"  --project "pure-faculty-367518"gcloud compute ssh --zone "us-central1-a" "nephio-poc-001"  --project "pure-faculty-367518"" 
+- ssh key for loging in to the VM. FIXME I am using the the key called google_compute_engine which is getting created after I execute "gcloud compute ssh --zone "us-central1-a" "nephio-poc-001"  --project "pure-faculty-367518"gcloud compute ssh --zone "us-central1-a" "nephio-poc-001"  --project "pure-faculty-367518""
 
 ## usage
 Update the hosts.yaml with IP address of the VM, and the ssh private_key.
-In the kind_setup.yaml set number of kind clusters to be created, 
+In the kind_setup.yaml set number of kind clusters to be created.
 
-bash /home/ubuntu/multiclusterkind/kind_create_clusters.sh <number of kind clusters>. 
+bash /home/ubuntu/multiclusterkind/kind_create_clusters.sh <number of kind clusters>.
 
 ```bash
 ansible -i hosts.yaml all -m ping
@@ -48,4 +48,4 @@ server1                    : ok=4    changed=3    unreachable=0    failed=0    s
 ```
 
 ## Access the kind clusters
-The kubeconfig files are present in the ~/.kube/cluster<n>.config files. 
+The kubeconfig files are present in the ~/.kube/cluster<n>.config files.

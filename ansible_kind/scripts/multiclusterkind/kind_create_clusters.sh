@@ -13,62 +13,10 @@ source "${REPO_ROOT}"/hack/util.sh
 
 # variable define
 KUBECONFIG_PATH=${KUBECONFIG_PATH:-"${HOME}/.kube"}
-ISTIO_SETUP_COMPLETE=""
 # hardcode the following
 F5GCNI_SETUP="YES"
-ISTIO_SETUP_METALLB="INSTALL_METALLB"
+SETUP_METALLB="INSTALL_METALLB"
 NUM_CLUSTERS=${1:-4}
-HOST_IPADDRESS=${2:-}
-
-############
-#echo "Enter Host IP: .. <optional>"
-#read HOST_IPADDRESS
-
-#echo "Number of Clusters:" 
-#read NUM_CLUSTERS
-#if [[ -z $NUM_CLUSTERS ]]; then
-#         echo "provide number of clusters to be created."
-#         exit 1
-#fi
-#
-#while true; do
-#    read -p "Do you wish to install CNI for Free5GC? " yn
-#    case $yn in
-#        [Yy]* ) 
-#             F5GCNI_SETUP="YES"; 
-#             ;;
-#        [Nn]* )
-#             F5GCNI_SETUP=""
-#             ;;
-#        * ) echo "Please answer yes or no.";;
-#    esac
-#    read -p "Do you wish to install ISTIO? " yn
-#    case $yn in
-#        [Yy]* )
-#             ISTIO_SETUP_COMPLETE="ISTIO_COMPLETE_INSTALL";
-#             ISTIO_SETUP_METALLB="INSTALL_METALLB";
-#             break
-#             ;;
-#        [Nn]* )
-#             ISTIO_SETUP_COMPLETE=""
-#             ;;
-#        * ) echo "Please answer yes or no.";;
-#    esac
-#    read -p "Do you wish to install METALLB? " yn
-#    case $yn in
-#        [Yy]* )
-#             ISTIO_SETUP_METALLB="INSTALL_METALLB";
-#             break
-#             ;;
-#        [Nn]* )
-#             ISTIO_SETUP_METALLB=""
-#             break
-#             ;;
-#        * ) echo "Please answer yes or no.";;
-#    esac
-#done
-###############
-
 CLUSTER_VERSION=${CLUSTER_VERSION:-"kindest/node:v1.21.1"}
 KIND_LOG_FILE=${KIND_LOG_FILE:-"/tmp/targetClusters"}
 
@@ -99,26 +47,28 @@ else
 fi
 #prepare for kindClusterConfig
 TEMP_PATH=$(mktemp -d)
-CLUSTER_PORT=15023
 echo -e "Preparing kindClusterConfig in path: ${TEMP_PATH}"
 i=1
-while [ "$i" -le $NUM_CLUSTERS ];
+while [ "$i" -le "$NUM_CLUSTERS" ];
 do
-  cp -rf "${REPO_ROOT}"/kindClusterConfig/cluster.yaml "${TEMP_PATH}"/cluster${i}.yaml
-  cp -rf "${REPO_ROOT}"/kindClusterConfig/cluster_provider.json "${TEMP_PATH}"/cluster_provider.json
+  FILE="${TEMP_PATH}"/cluster${i}.yaml	
+cat << EOF > "$FILE"
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+networking:
+  podSubnet: "{{pod_subnet}}"
+  serviceSubnet: "{{service_subnet}}"
+featureGates:
+  EndpointSliceProxying: true
+nodes:
+  - role: control-plane
+EOF
 
   #1. Set kind cluster configuration
-  POD_SUBNET="10.`expr $i + 10`.0.0\/16"
-  SERVICE_SUBNET="10.`expr $i + 11`.0.0\/16"
+  POD_SUBNET="10.$(( i + 10 )).0.0\/16"
+  SERVICE_SUBNET="10.$(( i + 11 )).0.0\/16"
   sed -i'' -e "s/{{pod_subnet}}/${POD_SUBNET}/g" "${TEMP_PATH}"/cluster${i}.yaml
   sed -i'' -e "s/{{service_subnet}}/${SERVICE_SUBNET}/g" "${TEMP_PATH}"/cluster${i}.yaml
-  if [[ -n "${HOST_IPADDRESS}" ]]; then # If bind the port of clusters(cluster1, cluster2, cluster3 and cluster4) to the host IP
-    sed -i'' -e "s/{{host_ipaddress}}/${HOST_IPADDRESS}/g" "${TEMP_PATH}"/cluster${i}.yaml
-    sed -i'' -e 's/networking:/&\'$'\n''  apiServerAddress: "'${HOST_IPADDRESS}'"/' "${TEMP_PATH}"/cluster${i}.yaml
-    sed -i'' -e 's/networking:/&\'$'\n''  apiServerPort: '`expr ${CLUSTER_PORT} + ${i} \* 3`'/' "${TEMP_PATH}"/cluster${i}.yaml
-  else
-    sed -i'' -e "/{{host_ipaddress}}/d" "${TEMP_PATH}"/cluster${i}.yaml
-  fi
 
   #2. Create Cluster
   util::create_cluster "cluster${i}" "${KUBECONFIG_PATH}/cluster${i}.config" "${CLUSTER_VERSION}" "${KIND_LOG_FILE}" "${TEMP_PATH}"/cluster${i}.yaml
@@ -128,7 +78,7 @@ do
   util::check_clusters_ready "${KUBECONFIG_PATH}/cluster${i}.config" "cluster${i}"
 
   #3. Install metallb
-  if [[ ${ISTIO_SETUP_METALLB} == "INSTALL_METALLB" ]]; then
+  if [[ ${SETUP_METALLB} == "INSTALL_METALLB" ]]; then
     util::install_metallb "${KUBECONFIG_PATH}/cluster${i}.config" ${i} 
   fi
   
@@ -140,30 +90,6 @@ do
     #util::setup_macvlan "${KUBECONFIG_PATH}/cluster${i}.config" "cluster${i}"
   fi
 
-  # Install ISTIO - for service discovery
-  if [[ ${ISTIO_SETUP_COMPLETE} == "ISTIO_COMPLETE_INSTALL" ]] ; then
-    istio_version=1.12.1
-	echo -n "Preparing: 'istio' existence check - "
-	if util::cmd_exist istioctl; then
-		echo "Istio Present alreadu"
-	else
-		util::install_istiolib $istio_version 
-	fi
-    #step3. Install Istio in clusters
-    util::setup_istio "${KUBECONFIG_PATH}/cluster${i}.config" "cluster${i}" "${KIND_LOG_FILE}" "${istio_version}"
-
-    #step4. Install Istio in clusters
-    util::install_istio "${KUBECONFIG_PATH}/cluster${i}.config" "cluster${i}" "${KIND_LOG_FILE}" "${istio_version}"
-
-    #step5. Install multi-primary
-    util::setup_mp "${KUBECONFIG_PATH}/cluster${i}.config" "cluster${i}"  1 "${istio_version}"
-
-    #step6: enable endpoint discovery
-    #util::export_secret "${CLUSTER1_KUBECONFIG}" "${CLUSTER2_KUBECONFIG}" \
-    #                       "${CLUSTER3_KUBECONFIG}" "${CLUSTER4_KUBECONFIG}"
-  fi
-
-  i=`expr $i + 1`
-  echo $PWD
+  i=$(( i + 1 ))
 done
 
