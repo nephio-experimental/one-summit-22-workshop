@@ -17,6 +17,9 @@ if [[ ${DEBUG:-false} == "true" ]]; then
 fi
 
 export PKG_KREW_PLUGINS_LIST=" "
+export PKG_KIND_VERSION=0.17.0
+export PKG_KUBECTL_VERSION=1.25.3
+KPT_VERSION=1.0.0-beta.23
 
 declare -A clusters
 clusters=(
@@ -31,10 +34,9 @@ clusters=(
 curl -fsSL http://bit.ly/install_pkg | PKG_COMMANDS_LIST="kind,docker,kubectl" bash
 
 if ! command -v kpt; then
-    curl -s 'https://i.jpillora.com/GoogleContainerTools/kpt@v1.0.0-beta.23!' | bash
+    curl -s "https://i.jpillora.com/GoogleContainerTools/kpt@v$KPT_VERSION!" | bash
     kpt completion bash | sudo tee /etc/bash_completion.d/kpt >/dev/null
 fi
-exit
 
 function deploy_k8s_cluster {
     local name="$1"
@@ -43,9 +45,9 @@ function deploy_k8s_cluster {
     local svc_subnet="$4"
 
     newgrp docker <<EONG
+docker network create --driver bridge --subnet=$node_subnet net-$name ||:
 if ! kind get clusters -q | grep -q $name; then
-    docker network create --driver bridge --subnet=$node_subnet $name
-    cat << EOF | KIND_EXPERIMENTAL_DOCKER_NETWORK=$name kind create cluster --name $name --config=-
+    cat << EOF | KIND_EXPERIMENTAL_DOCKER_NETWORK=net-$name kind create cluster --name $name --config=-
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 networking:
@@ -54,6 +56,7 @@ networking:
   serviceSubnet: "$svc_subnet"
 nodes:
   - role: control-plane
+    image: kindest/node:v$PKG_KUBECTL_VERSION
 EOF
 fi
 EONG

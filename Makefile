@@ -14,8 +14,8 @@ DOCKER_CMD ?= $(shell which docker 2> /dev/null || which podman 2> /dev/null || 
 lint:
 	sudo -E $(DOCKER_CMD) run --rm -v $$(pwd):/tmp/lint \
 	-e RUN_LOCAL=true \
-	-e LINTER_RULES_PATH=/ \
-	-e VALIDATE_KUBERNETES_KUBEVAL=false \
+	-e LINTER_RULES_PATH=.github/linters \
+        -e KUBERNETES_KUBEVAL_OPTIONS=--ignore-missing-schemas \
 	github/super-linter
 
 .PHONY: fmt
