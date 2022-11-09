@@ -1,7 +1,7 @@
 # participant
 
 ## Description
-Kpt package to apply with participant specific repos and other setup
+Kpt package to apply with participant specific repositories and other setup
 
 ## Usage
 
@@ -10,5 +10,5 @@ if the participant is 'workshopper', then:
 
 `kpt pkg get https://github.com/nephio-project/one-summit-22-workshop/packages/particpant.git workshopper`
 
-This will pull the package and set up the repo pointers correctly.
+This will pull the package and set up the repository pointers correctly.
 
