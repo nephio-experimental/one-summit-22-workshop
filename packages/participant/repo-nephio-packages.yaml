@@ -1,0 +1,14 @@
+apiVersion: config.porch.kpt.dev/v1alpha1
+kind: Repository
+metadata:
+  name: nephio-packages
+  namespace: default
+spec:
+  content: Package
+  git:
+    branch: main
+    directory: /
+    repo: https://github.com/nephio-project/nephio-packages.git
+    secretRef:
+      name: github-personal-access-token
+  type: git

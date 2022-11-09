@@ -1,0 +1,19 @@
+apiVersion: fn.kpt.dev/v1alpha1
+kind: StarlarkRun
+metadata:
+  name: set-repos
+source: |
+  # set the repo names
+  def setrepo(resources, participant):
+    print(participant)
+    for r in resources:
+      # mutate the resource
+      if r["kind"] == "Repository" and r["apiVersion"] == "config.porch.kpt.dev/v1alpha1" and "/participant-" in r["spec"]["git"]["repo"]:
+        r["spec"]["git"]["repo"] = "https://github.com/nephio-test/" + participant + "-" + r["metadata"]["name"] + ".git"
+
+  name = "participant"
+  for r in ctx.resource_list["items"]:
+    if r["kind"] == "ConfigMap" and r["metadata"]["name"] == "kptfile.kpt.dev":
+      name = r["data"]["name"]
+
+  setrepo(ctx.resource_list["items"], name)
