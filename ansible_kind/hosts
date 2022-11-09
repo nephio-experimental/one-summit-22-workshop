@@ -1,2 +1,0 @@
-[servers]
-server1 ansible_host=34.123.146.121 ansible_user=ubuntu ansible_ssh_private_key_file=/home/ubuntu/.ssh/google_compute_engine

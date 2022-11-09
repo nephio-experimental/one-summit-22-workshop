@@ -1,8 +1,11 @@
 ---
 - hosts: all
+  gather_facts: no
   strategy: free
   user: ubuntu
   tasks:
+   - name:
+     ansible.builtin.wait_for_connection:
    - name: Copy multuclusterkind directory
      copy: 
       src: ./scripts/multiclusterkind 

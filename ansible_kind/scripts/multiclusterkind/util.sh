@@ -200,7 +200,7 @@ function util::wait_for_condition() {
       fi
       sleep 1
     else
-      echo -e "\n[ERROR] Timeout waiting for condition."
+      echo -e "\n Timeout waiting for condition."
       return 1
     fi
   done
