@@ -1,0 +1,29 @@
+apiVersion: infra.nephio.org/v1alpha1
+kind: Cluster
+metadata:
+  name: edge-2
+  labels:
+    nephio.org/region: us-central1
+    nephio.org/site-type: edge
+    nephio.org/site: edge-2
+repositoryRef:
+  name: edge-2
+---
+apiVersion: infra.nephio.org/v1alpha1
+kind: ClusterContext
+metadata:
+  name: edge-2
+spec:
+  siteCode: edge-2
+  cniConfig:
+    cniType: macvlan
+    masterInterface: ens1
+---
+apiVersion: infra.nephio.org/v1alpha1
+kind: ClusterScaleProfile
+metadata:
+  name: edge-2
+spec:
+  autoscaling: false
+  nodeMax: 12
+  siteDensity: medium

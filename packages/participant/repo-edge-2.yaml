@@ -1,0 +1,14 @@
+apiVersion: config.porch.kpt.dev/v1alpha1
+kind: Repository
+metadata:
+  name: edge-2
+  namespace: default
+spec:
+  content: Package
+  git:
+    branch: main
+    directory: /
+    repo: https://github.com/nephio-test/participant-edge-2.git
+    secretRef:
+      name: github-personal-access-token
+  type: git

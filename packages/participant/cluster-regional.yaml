@@ -1,0 +1,29 @@
+apiVersion: infra.nephio.org/v1alpha1
+kind: Cluster
+metadata:
+  name: regional
+  labels:
+    nephio.org/region: us-central1
+    nephio.org/site-type: regional
+    nephio.org/site: us-central1
+repositoryRef:
+  name: regional
+---
+apiVersion: infra.nephio.org/v1alpha1
+kind: ClusterContext
+metadata:
+  name: regional
+spec:
+  siteCode: us-central1
+  cniConfig:
+    cniType: macvlan
+    masterInterface: ens1
+---
+apiVersion: infra.nephio.org/v1alpha1
+kind: ClusterScaleProfile
+metadata:
+  name: regional
+spec:
+  autoscaling: true
+  nodeMax: 2400
+  siteDensity: high
