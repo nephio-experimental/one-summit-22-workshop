@@ -5,6 +5,7 @@ metadata:
   namespace: default
 spec:
   content: Package
+  deployment: false
   git:
     branch: main
     createBranch: true
