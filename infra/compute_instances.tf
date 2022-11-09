@@ -52,7 +52,7 @@ resource "null_resource" "config_vm" {
   }
 
   provisioner "remote-exec" {
-    script = "../scripts/startup.sh"
+    script = "../scripts/install.sh"
   }
 }
 
