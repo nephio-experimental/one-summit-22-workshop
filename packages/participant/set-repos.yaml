@@ -7,7 +7,6 @@ metadata:
 source: |
   # set the repo names
   def setrepo(resources, participant):
-    print(participant)
     for r in resources:
       # mutate the resource
       if r["kind"] == "Repository" and r["apiVersion"] == "config.porch.kpt.dev/v1alpha1" and "/participant-" in r["spec"]["git"]["repo"]:

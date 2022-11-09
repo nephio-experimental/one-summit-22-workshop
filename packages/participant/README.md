@@ -9,10 +9,12 @@ When you fetch the package, you should give it the name of the participant. So,
 if the participant is 'workshopper', then:
 
 ```bash
-kpt pkg get --for-deployment https://github.com/nephio-project/one-summit-22-workshop.git/packages/participant workshopper
-kpt fn render workshopper
-kpt live init workshopper
-kpt live apply workshopper --table
+PARTICIPANT=workshopper # Replace 'workshopper' with the participant name provided to you
+
+kpt pkg get --for-deployment https://github.com/nephio-project/one-summit-22-workshop.git/packages/participant $PARTICIPANT
+kpt fn render $PARTICIPANT
+kpt live init $PARTICIPANT
+kpt live apply $PARTICIPANT --output table
 ```
 
 This assumes the GitHub basic auth secret `github-personal-access-token` has
