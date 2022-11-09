@@ -5,8 +5,10 @@ metadata:
   namespace: default
 spec:
   content: Package
+  deployment: true
   git:
     branch: main
+    createBranch: true
     directory: /
     repo: https://github.com/nephio-test/participant-edge-2.git
     secretRef:
