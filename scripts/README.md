@@ -38,3 +38,7 @@ The following diagram shows the result after its execution.
 | eth4(172.88.0.254/16)                                                                                                                            |
 +--------------------------------------------------------------------------------------------------------------------------------------------------+
 ```
+
+The following resources are deployed on every KinD clusters:
+
+- [Multus-CNI](https://github.com/k8snetworkplumbingwg/multus-cni)
