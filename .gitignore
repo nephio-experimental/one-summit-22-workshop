@@ -50,10 +50,11 @@ override.tf.json
 
 # End of https://www.gitignore.io/api/terraform,visualstudiocode
 
-plan
+# Other files files
 **/key.json
-.vscode
 .kube*
 kubeconfig.yaml
-.vagrant
-*.log
+
+# Project Specific
+ansible_kind/hosts
+infra/keys/nephio

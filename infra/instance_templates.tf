@@ -11,8 +11,8 @@ locals {
       disk_size_gb         = "100"
       auto_delete          = true
       source_image_project = "ubuntu-os-cloud"
-      source_image_family  = "ubuntu-2204-lts"
-      source_image         = "ubuntu-2204-jammy-v20221101a"
+      source_image_family  = "ubuntu-2004-lts"
+      source_image         = "ubuntu-2004-focal-v20221018"
       machine_type         = "e2-standard-8"
       tags                 = ["ssh"]
       labels = {
@@ -33,7 +33,6 @@ locals {
       #     network_tier = null
       #   }]
       # }]
-      startup_script = file("scripts/startup.sh")
       service_account = {
         email  = "compute-general@${var.project_id}.iam.gserviceaccount.com"
         scopes = []
@@ -64,7 +63,6 @@ module "instance_templates" {
   access_config        = each.value.access_config
   # additional_networks = each.value.additional_networks
   subnetwork_project = var.project_id
-  startup_script     = each.value.startup_script
   service_account    = each.value.service_account
   depends_on         = [module.subnets, module.service_accounts]
 }

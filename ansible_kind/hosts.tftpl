@@ -1,0 +1,10 @@
+[servers]
+%{ for compute_instances in hosts ~}
+%{ for ips in compute_instances ~}
+${ips}
+%{ endfor ~}
+%{ endfor ~}
+
+[all:vars]
+ansible_ssh_common_args="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+ansible_user=${user}

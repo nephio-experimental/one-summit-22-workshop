@@ -11,6 +11,8 @@ terraform {
       source  = "hashicorp/google-beta"
       version = "~> 4.42.0"
     }
+    local = "~> 2.2.3"
+    null  = "~> 3.2.0"
   }
 
   # backend "gcs" {
