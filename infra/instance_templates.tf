@@ -13,7 +13,7 @@ locals {
       source_image_project = "ubuntu-os-cloud"
       source_image_family  = "ubuntu-2004-lts"
       source_image         = "ubuntu-2004-focal-v20221018"
-      machine_type         = "e2-standard-4"
+      machine_type         = "e2-standard-8"
       tags                 = ["ssh"]
       labels = {
         cluster = "central"
