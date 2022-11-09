@@ -5,10 +5,18 @@ Kpt package to apply with participant specific repositories and other setup
 
 ## Usage
 
-When you fetch the package, you should give it the name of the particpant. So,
+When you fetch the package, you should give it the name of the participant. So,
 if the participant is 'workshopper', then:
 
-`kpt pkg get https://github.com/nephio-project/one-summit-22-workshop/packages/particpant.git workshopper`
+```
+$ kpt pkg get --for-deployment https://github.com/nephio-project/one-summit-22-workshop.git/packages/participant workshopper
+$ kpt fn render workshopper
+$ kpt live init workshopper
+$ kpt live apply workshopper --table
+```
+
+This assumes the GitHub basic auth secret `github-personal-access-token` has
+been created with username `nephio-test` and the PAT as the password.
 
 This will pull the package and set up the repository pointers correctly.
 
