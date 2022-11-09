@@ -36,7 +36,23 @@ Vagrant.configure('2') do |config|
   config.vm.box_check_update = false
   config.vm.synced_folder './', '/vagrant'
 
-  config.vm.provision 'shell', privileged: false, path: './scripts/install.sh', reset: true
+  config.vm.provision 'shell', privileged: false do |sh|
+    sh.env = {
+      DEBUG: ENV.fetch('DEBUG', true)
+    }
+    sh.inline = <<-SHELL
+      set -o errexit
+      set -o pipefail
+
+      if [ -f /etc/netplan/01-netcfg.yaml ]; then
+          sudo sed -i "s/addresses: .*/addresses: [1.1.1.1, 8.8.8.8, 8.8.4.4]/g" /etc/netplan/01-netcfg.yaml
+          sudo netplan apply
+      fi
+
+      cd /vagrant/scripts
+      ./install.sh | tee ~/install.log
+    SHELL
+  end
 
   %i[virtualbox libvirt].each do |provider|
     config.vm.provider provider do |p|
