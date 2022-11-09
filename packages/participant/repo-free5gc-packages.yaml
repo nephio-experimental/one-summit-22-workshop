@@ -1,15 +1,14 @@
 apiVersion: config.porch.kpt.dev/v1alpha1
 kind: Repository
 metadata:
-  name: regional
+  name: free5gc-packages
   namespace: default
 spec:
   content: Package
   git:
     branch: main
-    createBranch: true
     directory: /
-    repo: https://github.com/nephio-test/participant-regional.git
+    repo: https://github.com/nephio-project/free5gc-packages.git
     secretRef:
       name: github-personal-access-token
   type: git

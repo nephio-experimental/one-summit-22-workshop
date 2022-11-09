@@ -7,6 +7,7 @@ spec:
   content: Package
   git:
     branch: main
+    createBranch: true
     directory: /
     repo: https://github.com/nephio-test/participant-edge-2.git
     secretRef:

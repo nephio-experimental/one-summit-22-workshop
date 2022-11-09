@@ -1,7 +1,7 @@
 apiVersion: config.porch.kpt.dev/v1alpha1
 kind: Repository
 metadata:
-  name: regional
+  name: catalog
   namespace: default
 spec:
   content: Package
@@ -9,7 +9,7 @@ spec:
     branch: main
     createBranch: true
     directory: /
-    repo: https://github.com/nephio-test/participant-regional.git
+    repo: https://github.com/nephio-test/participant-catalog.git
     secretRef:
       name: github-personal-access-token
   type: git
