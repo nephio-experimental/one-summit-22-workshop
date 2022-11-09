@@ -3,6 +3,8 @@ kind: Repository
 metadata:
   name: free5gc-packages
   namespace: default
+  labels:
+    kpt.dev/repository-content: external-blueprints
 spec:
   content: Package
   deployment: false

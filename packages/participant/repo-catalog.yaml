@@ -3,6 +3,8 @@ kind: Repository
 metadata:
   name: catalog
   namespace: default
+  labels:
+    kpt.dev/repository-content: organizational-blueprints
 spec:
   content: Package
   deployment: false
