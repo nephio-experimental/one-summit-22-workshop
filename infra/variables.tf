@@ -16,9 +16,3 @@ variable "zone" {
   type        = string
   default     = null
 }
-
-variable "ssh_private_key_path" {
-  description = "Private SSH Key Path to be provided on terraform apply run"
-  type        = string
-  default     = null
-}

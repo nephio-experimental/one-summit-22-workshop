@@ -30,7 +30,7 @@ ssh-keygen -t rsa -f ~/.ssh/nephio.pub -C nephio -b 2048
 
 ```bash
 # # VM configuration through bash script 
-# Needs some reworking if using more than "nephio-poc" object in locals
+# # Needs some reworking if using more than "nephio-poc" object in locals
 # resource "null_resource" "config_vm" {
 #   count = local.num_vms
 #   connection {

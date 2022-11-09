@@ -40,21 +40,21 @@ module "compute_instances" {
   depends_on          = [module.subnets, module.service_accounts, resource.google_compute_project_metadata.ssh_keys]
 }
 
-# # VM configuration through bash script 
+# VM configuration through bash script 
 # Needs some reworking if using more than "nephio-poc" object in locals
-# resource "null_resource" "config_vm" {
-#   count = local.num_vms
-#   connection {
-#     type        = "ssh"
-#     user        = local.user
-#     private_key = file(local.ssh_private_key_path)
-#     host        = module.compute_instances["nephio-poc"].instances_details[count.index].*.network_interface[0].*.access_config[0].*.nat_ip[0]
-#   }
+resource "null_resource" "config_vm" {
+  count = local.num_vms
+  connection {
+    type        = "ssh"
+    user        = local.user
+    private_key = file(local.ssh_private_key_path)
+    host        = module.compute_instances["nephio-poc"].instances_details[count.index].*.network_interface[0].*.access_config[0].*.nat_ip[0]
+  }
 
-#   provisioner "remote-exec" {
-#     script = "../scripts/startup.sh"
-#   }
-# }
+  provisioner "remote-exec" {
+    script = "../scripts/startup.sh"
+  }
+}
 
 # # VM configuration through ansible playbooks
 # resource "local_file" "ansible_inventory" {
