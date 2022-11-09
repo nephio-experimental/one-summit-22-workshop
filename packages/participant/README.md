@@ -8,11 +8,11 @@ Kpt package to apply with participant specific repositories and other setup
 When you fetch the package, you should give it the name of the participant. So,
 if the participant is 'workshopper', then:
 
-```
-$ kpt pkg get --for-deployment https://github.com/nephio-project/one-summit-22-workshop.git/packages/participant workshopper
-$ kpt fn render workshopper
-$ kpt live init workshopper
-$ kpt live apply workshopper --table
+```bash
+kpt pkg get --for-deployment https://github.com/nephio-project/one-summit-22-workshop.git/packages/participant workshopper
+kpt fn render workshopper
+kpt live init workshopper
+kpt live apply workshopper --table
 ```
 
 This assumes the GitHub basic auth secret `github-personal-access-token` has
