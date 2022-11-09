@@ -11,9 +11,9 @@ locals {
       disk_size_gb         = "100"
       auto_delete          = true
       source_image_project = "ubuntu-os-cloud"
-      source_image_family  = "ubuntu-2204-lts"
-      source_image         = "ubuntu-2204-jammy-v20221101a"
-      machine_type         = "e2-standard-8"
+      source_image_family  = "ubuntu-2004-lts"
+      source_image         = "ubuntu-2004-focal-v20221018"
+      machine_type         = "e2-standard-4"
       tags                 = ["ssh"]
       labels = {
         cluster = "central"
