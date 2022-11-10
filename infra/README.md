@@ -30,18 +30,17 @@ ssh-keygen -t rsa -f ~/.ssh/nephio.pub -C nephio -b 2048
 
 ```bash
 # # VM configuration through bash script 
-# # Needs some reworking if using more than "nephio-poc" object in locals
 # resource "null_resource" "config_vm" {
-#   count = local.num_vms
+#   for_each = { for compute_instances in local.compute_instances : compute_instances.name => compute_instances }
 #   connection {
 #     type        = "ssh"
 #     user        = local.user
 #     private_key = file(local.ssh_private_key_path)
-#     host        = module.compute_instances["nephio-poc"].instances_details[count.index].*.network_interface[0].*.access_config[0].*.nat_ip[0]
+#     host        = module.compute_instances[each.key].instances_details[0].*.network_interface[0].*.access_config[0].*.nat_ip[0]
 #   }
 
 #   provisioner "remote-exec" {
-#     script = "../scripts/startup.sh"
+#     script = "../scripts/install.sh"
 #   }
 # }
 ```
@@ -51,7 +50,7 @@ OR
 ```bash
 # # VM configuration through ansible playbooks
 # resource "local_file" "ansible_inventory" {
-#   content    = templatefile("../ansible_kind/hosts.tftpl", { hosts = { for k, vm in module.compute_instances : k => vm.instances_details[*].*.network_interface[0].*.access_config[0].*.nat_ip[0] }, user = local.user })
+#   content    = templatefile("../ansible_kind/hosts.tftpl", { host = module.compute_instances["nephio-poc-template"].instances_details[0].*.network_interface[0].*.access_config[0].*.nat_ip[0], user = local.user })
 #   filename   = "../ansible_kind/hosts"
 #   depends_on = [module.compute_instances]
 # }
