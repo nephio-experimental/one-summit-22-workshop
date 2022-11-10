@@ -16,4 +16,4 @@
    - name: Prepare VM for kind installation
      command: bash /home/ubuntu/multiclusterkind/k8s_cluster_setup.sh    
    - name: Install kind clusters 
-     command: bash /home/ubuntu/multiclusterkind/kind_create_clusters.sh 2
+     command: bash /home/ubuntu/multiclusterkind/kind_create_clusters.sh 4
