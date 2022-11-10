@@ -60,8 +60,6 @@ apiVersion: kind.x-k8s.io/v1alpha4
 networking:
   podSubnet: "{{pod_subnet}}"
   serviceSubnet: "{{service_subnet}}"
-featureGates:
-  EndpointSliceProxying: true
 nodes:
   - role: control-plane
 EOF
