@@ -7,7 +7,6 @@ set -o pipefail
 # 1. used by developer to setup develop environment quickly.
 # 2. used by e2e testing to setup test environment automatically.
 
-
 REPO_ROOT=$(dirname "${BASH_SOURCE[0]}")
 # shellcheck source=/dev/null
 source "${REPO_ROOT}"/util.sh
@@ -16,7 +15,7 @@ source "${REPO_ROOT}"/util.sh
 KUBECONFIG_PATH=${KUBECONFIG_PATH:-"${HOME}/.kube"}
 # hardcode the following
 F5GCNI_SETUP="YES"
-SETUP_METALLB="INSTALL_METALLB"
+SETUP_METALLB=""
 NUM_CLUSTERS=${1:-4}
 CLUSTER_VERSION=${CLUSTER_VERSION:-"kindest/node:v1.21.1"}
 KIND_LOG_FILE=${KIND_LOG_FILE:-"/tmp/targetClusters"}
@@ -29,10 +28,10 @@ util::verify_go_version
 kind_version=v0.11.1
 echo -n "Preparing: 'kind' existence check - "
 if util::cmd_exist kind; then
-  echo "passed"
+    echo "passed"
 else
-  echo "not pass"
-  util::install_kind $kind_version
+    echo "not pass"
+    util::install_kind $kind_version
 fi
 # get arch name and os name in bootstrap
 BS_ARCH=$(go env GOARCH)
@@ -41,19 +40,21 @@ BS_OS=$(go env GOOS)
 util::install_environment_check "${BS_ARCH}" "${BS_OS}"
 echo -n "Preparing: 'kubectl' existence check - "
 if util::cmd_exist kubectl; then
-  echo "passed"
+    echo "passed"
 else
-  echo "not pass"
-  util::install_kubectl "" "${BS_ARCH}" "${BS_OS}"
+    echo "not pass"
+    util::install_kubectl "" "${BS_ARCH}" "${BS_OS}"
 fi
+
+clusters=(nephio regional edge1 edge2)
 #prepare for kindClusterConfig
 TEMP_PATH=$(mktemp -d)
 echo -e "Preparing kindClusterConfig in path: ${TEMP_PATH}"
-i=1
-while [ "$i" -le "$NUM_CLUSTERS" ];
-do
-  FILE="${TEMP_PATH}"/cluster${i}.yaml	
-cat << EOF > "$FILE"
+i=0
+while [ "$i" -lt "$NUM_CLUSTERS" ]; do
+    clustername="${clusters[${i}]}"
+    FILE="${TEMP_PATH}/${clustername}".yaml
+    cat <<EOF >"$FILE"
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 networking:
@@ -64,33 +65,31 @@ featureGates:
 nodes:
   - role: control-plane
 EOF
+    #1. Set kind cluster configuration
+    POD_SUBNET="10.$((i + 10)).0.0\/16"
+    SERVICE_SUBNET="10.$((i + 11)).0.0\/16"
+    sed -i'' -e "s/{{pod_subnet}}/${POD_SUBNET}/g" "${TEMP_PATH}"/"${clustername}".yaml
+    sed -i'' -e "s/{{service_subnet}}/${SERVICE_SUBNET}/g" "${TEMP_PATH}"/"${clustername}".yaml
 
-  #1. Set kind cluster configuration
-  POD_SUBNET="10.$(( i + 10 )).0.0\/16"
-  SERVICE_SUBNET="10.$(( i + 11 )).0.0\/16"
-  sed -i'' -e "s/{{pod_subnet}}/${POD_SUBNET}/g" "${TEMP_PATH}"/cluster${i}.yaml
-  sed -i'' -e "s/{{service_subnet}}/${SERVICE_SUBNET}/g" "${TEMP_PATH}"/cluster${i}.yaml
+    #2. Create Cluster
+    util::create_cluster "${clustername}" "${KUBECONFIG_PATH}/${clustername}.config" "${CLUSTER_VERSION}" "${KIND_LOG_FILE}" "${TEMP_PATH}"/"${clustername}".yaml
 
-  #2. Create Cluster
-  util::create_cluster "cluster${i}" "${KUBECONFIG_PATH}/cluster${i}.config" "${CLUSTER_VERSION}" "${KIND_LOG_FILE}" "${TEMP_PATH}"/cluster${i}.yaml
+    #wait until the host cluster ready
+    echo "Waiting for the host clusters to be ready..."
+    util::check_clusters_ready "${KUBECONFIG_PATH}/${clustername}.config" "${clustername}"
 
-  #wait until the host cluster ready
-  echo "Waiting for the host clusters to be ready..."
-  util::check_clusters_ready "${KUBECONFIG_PATH}/cluster${i}.config" "cluster${i}"
+    #3. Install metallb
+    if [[ ${SETUP_METALLB} == "INSTALL_METALLB" ]]; then
+        util::install_metallb "${KUBECONFIG_PATH}/${clustername}.config" ${i}
+    fi
 
-  #3. Install metallb
-  if [[ ${SETUP_METALLB} == "INSTALL_METALLB" ]]; then
-    util::install_metallb "${KUBECONFIG_PATH}/cluster${i}.config" ${i} 
-  fi
-  
-  #4. Install CNIs
-  if [[ -n "${F5GCNI_SETUP}" ]]; then
-    #step5. Install Weave and multus CNI and copying the macvlan binary to kind container
-    util::install_weave "${KUBECONFIG_PATH}/cluster${i}.config" "cluster${i}" 
-    util::install_multus "${KUBECONFIG_PATH}/cluster${i}.config" "cluster${i}"
-    #util::setup_macvlan "${KUBECONFIG_PATH}/cluster${i}.config" "cluster${i}"
-  fi
+    #4. Install CNIs
+    if [[ -n ${F5GCNI_SETUP} ]]; then
+        #step5. Install Weave and multus CNI and copying the macvlan binary to kind container
+        util::install_weave "${KUBECONFIG_PATH}/${clustername}.config" "${clustername}"
+        util::install_multus "${KUBECONFIG_PATH}/${clustername}.config" "${clustername}"
+        util::setup_macvlan "${KUBECONFIG_PATH}/${clustername}.config" "${clustername}"
+    fi
 
-  i=$(( i + 1 ))
+    i=$((i + 1))
 done
-
