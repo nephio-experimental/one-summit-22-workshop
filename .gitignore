@@ -58,3 +58,4 @@ kubeconfig.yaml
 # Project Specific
 ansible_kind/hosts
 infra/keys/nephio
+infra/inventory
