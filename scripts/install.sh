@@ -84,9 +84,27 @@ function wan_exec {
     sudo docker exec wan sh -c "$cmd"
 }
 
+function setup_sysctl {
+    local key="$1"
+    local value="$2"
+
+    if [ "$(sysctl -n "$key")" != "$value" ]; then
+        if [ -d /etc/sysctl.d ]; then
+            echo "$key=$value" | sudo tee "/etc/sysctl.d/99-$key.conf"
+        elif [ -f /etc/sysctl.conf ]; then
+            echo "$key=$value" | sudo tee --append /etc/sysctl.conf
+        fi
+
+        sudo sysctl "$key=$value"
+    fi
+}
+
 function deploy_multus {
     kubectl apply --filename="https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/v$MULTUS_CNI_VERSION/deployments/multus-daemonset-thick-plugin.yml"
 }
+
+setup_sysctl "fs.inotify.max_user_watches" "524288"
+setup_sysctl "fs.inotify.max_user_instances" "512"
 
 # Create WAN emulator to interconnect clusters
 if [ -z "$(sudo docker images wanem:0.0.1 -q)" ]; then
