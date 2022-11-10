@@ -1,0 +1,19 @@
+---
+- hosts: all
+  gather_facts: no
+  strategy: free
+  user: ubuntu
+  tasks:
+   - name:
+     ansible.builtin.wait_for_connection:
+   - name: Copy multuclusterkind directory
+     copy: 
+      src: ./scripts/multiclusterkind 
+      dest: /home/ubuntu/ 
+      owner: ubuntu
+      group: ubuntu
+      mode: 0644
+   - name: Prepare VM for kind installation
+     command: bash /home/ubuntu/multiclusterkind/k8s_cluster_setup.sh    
+   - name: Install kind clusters 
+     command: bash /home/ubuntu/multiclusterkind/kind_create_clusters.sh 2
