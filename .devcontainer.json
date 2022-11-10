@@ -4,8 +4,8 @@
         "ghcr.io/devcontainers/features/docker-in-docker:1": {}
     },
     "hostRequirements": {
-        "cpus": "4",
+        "cpus": 4,
         "memory": "8gb"
     },
-    "postCreateCommand": "./scripts/install.sh"
+    "postCreateCommand": "cd scripts/; ./install.sh"
 }
