@@ -19,7 +19,10 @@ fi
 export PKG_KREW_PLUGINS_LIST=" "
 export PKG_KIND_VERSION=0.17.0
 export PKG_KUBECTL_VERSION=1.25.3
+export PKG_CNI_PLUGINS_FOLDER=/opt/containernetworking/plugins
+export PKG_CNI_PLUGINS_VERSION=1.1.1
 KPT_VERSION=1.0.0-beta.23
+MULTUS_CNI_VERSION=3.9.2
 
 declare -A clusters
 clusters=(
@@ -31,7 +34,7 @@ clusters=(
 
 # Install dependencies
 # NOTE: Shorten link -> https://github.com/electrocucaracha/pkg-mgr_scripts
-curl -fsSL http://bit.ly/install_pkg | PKG_COMMANDS_LIST="kind,docker,kubectl" bash
+curl -fsSL http://bit.ly/install_pkg | PKG_COMMANDS_LIST="kind,docker,kubectl" PKG=cni-plugins bash
 
 if ! command -v kpt; then
     curl -s "https://i.jpillora.com/GoogleContainerTools/kpt@v$KPT_VERSION!" | bash
@@ -57,7 +60,11 @@ networking:
 nodes:
   - role: control-plane
     image: kindest/node:v$PKG_KUBECTL_VERSION
+    extraMounts:
+      - hostPath: $PKG_CNI_PLUGINS_FOLDER
+        containerPath: /opt/cni/bin
 EOF
+kind load docker-image ghcr.io/k8snetworkplumbingwg/multus-cni:v$MULTUS_CNI_VERSION-thick-amd64 --name $name
 fi
 docker network connect --ip "${node_subnet%.*}.254" net-$name wan
 EONG
@@ -77,12 +84,35 @@ function wan_exec {
     sudo docker exec wan sh -c "$cmd"
 }
 
+function setup_sysctl {
+    local key="$1"
+    local value="$2"
+
+    if [ "$(sysctl -n "$key")" != "$value" ]; then
+        if [ -d /etc/sysctl.d ]; then
+            echo "$key=$value" | sudo tee "/etc/sysctl.d/99-$key.conf"
+        elif [ -f /etc/sysctl.conf ]; then
+            echo "$key=$value" | sudo tee --append /etc/sysctl.conf
+        fi
+
+        sudo sysctl "$key=$value"
+    fi
+}
+
+function deploy_multus {
+    kubectl apply --filename="https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/v$MULTUS_CNI_VERSION/deployments/multus-daemonset-thick-plugin.yml"
+}
+
+setup_sysctl "fs.inotify.max_user_watches" "524288"
+setup_sysctl "fs.inotify.max_user_instances" "512"
+
 # Create WAN emulator to interconnect clusters
 if [ -z "$(sudo docker images wanem:0.0.1 -q)" ]; then
     sudo docker build -t wanem:0.0.1 .
 fi
 wan_exec "iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE"
 
+sudo docker pull "ghcr.io/k8snetworkplumbingwg/multus-cni:v$MULTUS_CNI_VERSION-thick-amd64"
 for cluster in "${!clusters[@]}"; do
     read -r -a subnets <<<"${clusters[$cluster]//,/ }"
     deploy_k8s_cluster "$cluster" "${subnets[0]}" "${subnets[1]}" "${subnets[2]}"
@@ -94,4 +124,11 @@ for context in $(kubectl config get-contexts --no-headers --output name); do
     for node in $(kubectl get node -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'); do
         kubectl wait --for=condition=ready "node/$node" --timeout=3m
     done
+    deploy_multus
+done
+
+# Wait for Multus CNI readiness
+for context in $(kubectl config get-contexts --no-headers --output name); do
+    kubectl config use-context "$context"
+    kubectl rollout status daemonset/kube-multus-ds -n kube-system --timeout=3m
 done
