@@ -1,4 +1,4 @@
 # General Settings
-project_id = "xxxxx"
-region     = "europe-west1"
-zone       = "europe-west1-b"
+project_id = "pure-faculty-367518"
+region     = "us-central1"
+zone       = "us-central1-a"

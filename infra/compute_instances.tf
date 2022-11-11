@@ -2,9 +2,9 @@
 
 locals {
   # Compute Instances parameters definition
-  ssh_public_key_path  = "xxxxx"
-  ssh_private_key_path = "xxxxx"
-  num_vms              = 2
+  ssh_public_key_path  = "/home/workshop/.ssh/nephio.pub"
+  ssh_private_key_path = "/home/workshop/.ssh/nephio"
+  num_vms              = 1
   user                 = "ubuntu"
   # Compute Instances definition
   compute_instances = {
@@ -42,30 +42,30 @@ module "compute_instances" {
 
 # VM configuration through bash script 
 # Needs some reworking if using more than "nephio-poc" object in locals
-resource "null_resource" "config_vm" {
-  count = local.num_vms
-  connection {
-    type        = "ssh"
-    user        = local.user
-    private_key = file(local.ssh_private_key_path)
-    host        = module.compute_instances["nephio-poc"].instances_details[count.index].*.network_interface[0].*.access_config[0].*.nat_ip[0]
-  }
-
-  provisioner "remote-exec" {
-    script = "../scripts/install.sh"
-  }
-}
+#resource "null_resource" "config_vm" {
+#  count = local.num_vms
+#  connection {
+#    type        = "ssh"
+#    user        = local.user
+#    private_key = file(local.ssh_private_key_path)
+#    host        = module.compute_instances["nephio-poc"].instances_details[count.index].*.network_interface[0].*.access_config[0].*.nat_ip[0]
+#  }
+#
+#  provisioner "remote-exec" {
+#    script = "../scripts/install.sh"
+#  }
+#}
 
 # # VM configuration through ansible playbooks
-# resource "local_file" "ansible_inventory" {
-#   content    = templatefile("../ansible_kind/hosts.tftpl", { hosts = { for k, vm in module.compute_instances : k => vm.instances_details[*].*.network_interface[0].*.access_config[0].*.nat_ip[0] }, user = local.user })
-#   filename   = "../ansible_kind/hosts"
-#   depends_on = [module.compute_instances]
-# }
+resource "local_file" "ansible_inventory" {
+  content    = templatefile("../ansible_kind/hosts.tftpl", { hosts = { for k, vm in module.compute_instances : k => vm.instances_details[*].*.network_interface[0].*.access_config[0].*.nat_ip[0] }, user = local.user })
+  filename   = "../ansible_kind/hosts"
+  depends_on = [module.compute_instances]
+}
 
-# resource "null_resource" "config_vm" {
-#   provisioner "local-exec" {
-#     command = "ansible-playbook -i '../ansible_kind/hosts' --private-key ${local.ssh_private_key_path} ../ansible_kind/kind_setup.yaml"
-#   }
-#   depends_on = [local_file.ansible_inventory]
-# }
+resource "null_resource" "config_vm" {
+  provisioner "local-exec" {
+    command = "ansible-playbook -i '../ansible_kind/hosts' --private-key ${local.ssh_private_key_path} ../ansible_kind/kind_setup.yaml"
+  }
+  depends_on = [local_file.ansible_inventory]
+}
