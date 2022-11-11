@@ -13,7 +13,7 @@ Terraform code to provision Kind clusters on top of GCE Instances
 - Generate the SSH Key on your local machine:
 
 ```bash
-ssh-keygen -t rsa -f ~/.ssh/nephio.pub -C nephio -b 2048
+ssh-keygen -t rsa -f ~/.ssh/nephio -C nephio -b 2048
 ```
 
 - Fill in the required parameters in compute_instances.tf file:
@@ -89,5 +89,5 @@ terraform apply
 To access the VM after creation run:
 
 ```bash
-ssh USER@IP -i PRIVATEKEYPATH
+ssh ubuntu@IP -i ~/.ssh/nephio
 ```
