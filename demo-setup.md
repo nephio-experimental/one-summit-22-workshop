@@ -27,7 +27,7 @@ repositories separately.
   available via `gcloud compute instances list`.
 
 
-## TODO (automation):
+## TODO (automation)
 * `./scripts/repos.sh create $PARTICIPANT` to create the GitHub repos
 * Install [ConfigSync](https://github.com/nephio-project/nephio-poc#installing-config-sync-in-workload-clusters) on the three workload clusters
   * Package and instructions probably need updating

@@ -73,7 +73,7 @@ kpt fn render "$webui_path"
 kpt live init "$webui_path" --force --kubeconfig ~/.kube/nephio.config
 kpt live apply "$webui_path" --reconcile-timeout=15m --kubeconfig ~/.kube/nephio.config
 
-_get_pkg $participant "https://github.com/nephio-project/one-summit-22-workshop.git/packages/participant"
+_get_pkg "$participant" "https://github.com/nephio-project/one-summit-22-workshop.git/packages/participant"
 kpt fn render "$participant_path"
 kpt live init "$participant_path" --force --kubeconfig ~/.kube/nephio.config
 kpt live apply "$participant_path" --reconcile-timeout=15m --kubeconfig ~/.kube/nephio.config
