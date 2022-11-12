@@ -9,7 +9,6 @@
 ##############################################################################
 
 #
-# NOTE: Assumes github CLI (gh) is installed in the path and either
 # GH_TOKEN is set or ~/nephio-test-github-pat.txt exists.
 #
 set -o pipefail
@@ -18,7 +17,6 @@ set -o nounset
 DEBUG=${DEBUG:-false}
 if [[ $DEBUG == "true" ]]; then
     set -o xtrace
-    export PKG_DEBUG=true
 fi
 
 function usage {
@@ -28,6 +26,10 @@ function usage {
 
 if [[ $# -lt 2 ]]; then
     usage
+fi
+
+if ! command -v gh >/dev/null; then
+    curl -s 'https://i.jpillora.com/cli/cli!?as=gh' | bash
 fi
 
 cmd=$1
