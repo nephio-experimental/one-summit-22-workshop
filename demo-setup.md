@@ -7,7 +7,7 @@ Currently here are all the steps needed (that I know of) to fully provision a pa
 * `cd one-summit-22-workshop`
 * `PARTICPANT=the-participant-username`
 * `./scripts/repos.sh create $PARTICIPANT` to create the GitHub repos
-* Run the VM creation script to create the participant VM
+* Run the VM creation script to create the participant VM ([see terraform section towards bottom of page](./infra/README.md) )
 * Copy the `nephio-test-github-pat.txt` from the workshop VM to the participant VM
 * Login to the participant VM
 * Run the cluster creation and networking setup scripts
