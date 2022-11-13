@@ -55,9 +55,10 @@ function _get_pkg {
 
 function _install_configsync {
     local kubeconfig="$1"
-    local cluster=$(basename "$kubeconfig" ".config")
+    local cluster
+    cluster=$(basename "$kubeconfig" ".config")
     local path="$base_path/$cluster"
-    _get_pkg $cluster https://github.com/nephio-project/nephio-packages.git/nephio-configsync
+    _get_pkg "$cluster" https://github.com/nephio-project/nephio-packages.git/nephio-configsync
 
     kpt fn render "$path"
     kpt live init "$path" --force --kubeconfig "$kubeconfig"
