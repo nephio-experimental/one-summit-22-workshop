@@ -29,11 +29,11 @@ repositories separately.
   `./scripts/repos.sh create $PARTICIPANT`
 
 
-# Automation TODO
+## Automation TODO
 
 * The `repos.sh` script and GitHub token are available on the VM; we could run
 `./repos.sh create $(hostname)` to automatically create the repositories. If we
-do this, the script may fail due to repos already existing, or due to GitHub
+do this, the script may fail due to repostories already existing, or due to GitHub
 rate limits. So, we need to be sure it failing does not abort the rest of setup.
 We also need to be prepared to run the script again from the workshop VM to
-provision any repos that failed to be created.
+provision any repositories that failed to be created.

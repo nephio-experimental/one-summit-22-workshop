@@ -68,7 +68,7 @@ organizational, team, and individual deployment variants of each package.
 Let's create our own organizational variant of the upstream free5gc package,
 using the Web UI.
 
-...results in free5gc-operator package in the `catalog` repo...
+...results in free5gc-operator package in the `catalog` repository...
 
 ### Deploy the free5gc Operator
 We can use a `PackageDeployment` resource to create a multi-cluster deployment
