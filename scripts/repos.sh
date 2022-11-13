@@ -1,1 +1,1 @@
-ansible_kind/scripts/multiclusterkind/repos.sh
+../ansible_kind/scripts/multiclusterkind/repos.sh
