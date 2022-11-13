@@ -53,6 +53,17 @@ function _get_pkg {
     fi
 }
 
+function _install_configsync {
+    local kubeconfig="$1"
+    local cluster=$(basename "$kubeconfig" ".config")
+    local path="$base_path/$cluster"
+    _get_pkg $cluster https://github.com/nephio-project/nephio-packages.git/nephio-configsync
+
+    kpt fn render "$path"
+    kpt live init "$path" --force --kubeconfig "$kubeconfig"
+    kpt live apply "$path" --reconcile-timeout=15m --kubeconfig "$kubeconfig"
+}
+
 if ! command -v kpt; then
     curl -s "https://i.jpillora.com/GoogleContainerTools/kpt@v$KPT_VERSION!" | bash
     kpt completion bash | sudo tee /etc/bash_completion.d/kpt >/dev/null
@@ -77,3 +88,11 @@ _get_pkg "$participant" "https://github.com/nephio-project/one-summit-22-worksho
 kpt fn render "$participant_path"
 kpt live init "$participant_path" --force --kubeconfig ~/.kube/nephio.config
 kpt live apply "$participant_path" --reconcile-timeout=15m --kubeconfig ~/.kube/nephio.config
+
+# Install ConfigSync on each workload cluster
+for kubeconfig in ~/.kube/*.config; do
+    if [[ "$kubeconfig" =~ nephio.config$ ]]; then
+      continue
+    fi
+    _install_configsync "$kubeconfig"
+done
