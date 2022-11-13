@@ -25,7 +25,7 @@ function _create_gh_secret {
 
     if [ -f "$nephio_gh_filename" ]; then
         for kubeconfig in ~/.kube/*.config; do
-            kubectl create secret generic -n default \
+            /home/ubuntu/.local/bin/kubectl create secret generic -n default \
                 github-personal-access-token \
                 --from-literal username=nephio-test \
                 --from-file password="${nephio_gh_filename}" \
