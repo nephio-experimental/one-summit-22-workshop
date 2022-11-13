@@ -25,27 +25,15 @@ repositories separately.
   ```
 * The result will give you the name and IP of the new VMs. They are also
   available via `gcloud compute instances list`.
+* For any new VMs, you may need to create the GitHub repositories via
+  `./scripts/repos.sh create $PARTICIPANT`
 
 
-## TODO (automation)
-* `./scripts/repos.sh create $PARTICIPANT` to create the GitHub repos
-* Install [ConfigSync](https://github.com/nephio-project/nephio-poc#installing-config-sync-in-workload-clusters) on the three workload clusters
-  * Package and instructions probably need updating
+# Automation TODO
 
-
-## Some commands
-* In these commands, `$IP` is the public IP address of the workshop VM.
-* To use the UI, you need to forward ports from your workstation to the VM, and
-  from the VM to the Pod.
-  ```bash
-  # login from your workstation, forwarding 7007 -> localhost:7007 on the remote VM.
-  ssh -L7007:localhost:7007 -i ~/.ssh/nephio ubuntu@$IP
-  # now you are in the remote VM, in there run
-  kubectl --kubeconfig ~/.kube/nephio.config port-forward --namespace=nephio-webui svc/nephio-webui 7007
-  ```
-* On your workstation browse to [http://localhost:7007](http://localhost:7007)
-* Create a second, separate login to the workshop VM for CLI access to the
-  clusters:
-  ```bash
-  ssh -i ~/.ssh/nephio ubuntu@$IP
-  ```
+* The `repos.sh` script and GitHub token are available on the VM; we could run
+`./repos.sh create $(hostname)` to automatically create the repositories. If we
+do this, the script may fail due to repos already existing, or due to GitHub
+rate limits. So, we need to be sure it failing does not abort the rest of setup.
+We also need to be prepared to run the script again from the workshop VM to
+provision any repos that failed to be created.
