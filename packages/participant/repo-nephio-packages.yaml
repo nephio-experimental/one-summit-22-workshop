@@ -4,6 +4,7 @@ metadata:
   name: nephio-packages
   namespace: default
   labels:
+    kpt.dev/repository-access: read-only
     kpt.dev/repository-content: external-blueprints
 spec:
   content: Package
@@ -12,6 +13,4 @@ spec:
     branch: main
     directory: /
     repo: https://github.com/nephio-project/nephio-packages.git
-    secretRef:
-      name: github-personal-access-token
   type: git
