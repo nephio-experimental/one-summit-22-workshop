@@ -58,7 +58,7 @@ function _install_configsync {
     local cluster
     cluster="$(hostname)-$(basename "$kubeconfig" ".config")"
     # HACK: work around naming difference
-    cluster=$(echo $cluster | sed "s/edge\([0-9]\)/edge-\1/")
+    cluster=${cluster//edge\([0-9]\)/edge-\1}
 
     local path="$base_path/$cluster"
     _get_pkg "$cluster" https://github.com/nephio-project/nephio-packages.git/nephio-configsync
