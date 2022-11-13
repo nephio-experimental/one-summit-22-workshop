@@ -18,6 +18,9 @@ fi
 nephio_gh_filename=${1:-$HOME/nephio-test-github-pat.txt}
 base_path=/opt/nephio
 system_path="$base_path/system"
+webui_path="$base_path/webui"
+participant=$(hostname)
+participant_path="$base_path/$participant"
 KPT_VERSION=1.0.0-beta.23
 
 function _create_gh_secret {
@@ -38,8 +41,8 @@ function _create_gh_secret {
 
 function _get_pkg {
     local pkg="$1"
+    local url=${2:-"https://github.com/nephio-project/nephio-packages.git/nephio-$pkg"}
     local path="$base_path/$pkg"
-    url="https://github.com/nephio-project/nephio-packages.git/nephio-$pkg"
 
     if ! [ -d "$path" ]; then
         sudo -E kpt pkg get --for-deployment "$url" "$path"
@@ -48,6 +51,17 @@ function _get_pkg {
     if [[ ${DEBUG:-false} == "true" ]]; then
         kpt pkg tree "$path"
     fi
+}
+
+function _install_configsync {
+    local kubeconfig="$1"
+    local cluster=$(basename "$kubeconfig" ".config")
+    local path="$base_path/$cluster"
+    _get_pkg $cluster https://github.com/nephio-project/nephio-packages.git/nephio-configsync
+
+    kpt fn render "$path"
+    kpt live init "$path" --force --kubeconfig "$kubeconfig"
+    kpt live apply "$path" --reconcile-timeout=15m --kubeconfig "$kubeconfig"
 }
 
 if ! command -v kpt; then
@@ -64,3 +78,21 @@ _get_pkg system
 kpt fn render "$system_path"
 kpt live init "$system_path" --force --kubeconfig ~/.kube/nephio.config
 kpt live apply "$system_path" --reconcile-timeout=15m --kubeconfig ~/.kube/nephio.config
+
+_get_pkg webui
+kpt fn render "$webui_path"
+kpt live init "$webui_path" --force --kubeconfig ~/.kube/nephio.config
+kpt live apply "$webui_path" --reconcile-timeout=15m --kubeconfig ~/.kube/nephio.config
+
+_get_pkg "$participant" "https://github.com/nephio-project/one-summit-22-workshop.git/packages/participant"
+kpt fn render "$participant_path"
+kpt live init "$participant_path" --force --kubeconfig ~/.kube/nephio.config
+kpt live apply "$participant_path" --reconcile-timeout=15m --kubeconfig ~/.kube/nephio.config
+
+# Install ConfigSync on each workload cluster
+for kubeconfig in ~/.kube/*.config; do
+    if [[ "$kubeconfig" =~ nephio.config$ ]]; then
+      continue
+    fi
+    _install_configsync "$kubeconfig"
+done

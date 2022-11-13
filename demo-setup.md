@@ -1,30 +1,51 @@
 # demo setup
 
-Currently here are all the steps needed (that I know of) to fully provision a participant VM. Let's try to make this as automatic as possible. I think we should be able to create an overall script that does most of this - in fact, I know some of these are already tied together in an overall script, but I wanted to list out the main steps I could think of.
+VMs are provisioned via Terraform, and within that VM the clusters are setup
+using Ansible and other scripts.
 
-@joaofeteira I think this is what you were referring to on the call this morning, that we need this overall script.
+GitHub rate limits mean repository creation may fail during bulk VM creation.
+If that happens, the VM creation will continue, and we can provision the
+repositories separately.
 
 * Login to the [workshop VM](https://console.cloud.google.com/compute/instancesDetail/zones/us-central1-a/instances/workshop?project=pure-faculty-367518&supportedpurview=project)
-* `sudo su - workshop`
-* `cd one-summit-22-workshop`
-* `PARTICPANT=the-participant-username`
+* Navigate to the common workshop admin directory, and verify you have the
+  latest scripts.
+  ```bash
+  sudo su - workshop
+  cd one-summit-22-workshop
+  git pull --ff-only
+  ```
+* Adjust the number of VMs to create by editing `infra/compute_instances.tf`,
+  setting the `num_vms` parameter ([more info](infra/README.md)), then execute terraform:
+  ```bash
+  cd infra
+  terraform plan
+  # you should see that new VMs will be created
+  terraform apply
+  ```
+* The result will give you the name and IP of the new VMs. They are also
+  available via `gcloud compute instances list`.
+
+
+## TODO (automation)
 * `./scripts/repos.sh create $PARTICIPANT` to create the GitHub repos
-* Run the VM creation script to create the participant VM ([see terraform section towards bottom of page](./infra/README.md) )
-* Copy the `nephio-test-github-pat.txt` from the workshop VM to the participant VM
-* Login to the participant VM
-* Run the cluster creation and networking setup scripts
-* Create the secret *in each cluster*:
-  `kubectl create secret generic -ndefault github-personal-access-token --from-literal username=nephio-test --from-file password=~/nephio-test-github-pat.txt --type kubernetes.io/basic-auth`
-* Delete the `nephio-test-github-pat.txt` (it's not critical but may as well)
-* Install [nephio-system](https://github.com/nephio-project/nephio-poc#installing-the-server-components)
-  * John needs to update this with latest nephio-controller-poc,
-    nephio-5gc-controller, and Wim's various IPAM and config injectors
-  * That will add a bunch of CRDs, etc.
-  * John also needs to build and push all the images to the registry
-* Install [nephio-webui](https://github.com/nephio-project/nephio-poc#installing-the-web-ui)
-  * Chris is fixing this so we don't need the OAuth stuff anymore, which will be
-    much simpler.
-* Install the [`participant`](https://github.com/nephio-project/one-summit-22-workshop/tree/main/packages/participant)package on the management cluster
 * Install [ConfigSync](https://github.com/nephio-project/nephio-poc#installing-config-sync-in-workload-clusters) on the three workload clusters
   * Package and instructions probably need updating
 
+
+## Some commands
+* In these commands, `$IP` is the public IP address of the workshop VM.
+* To use the UI, you need to forward ports from your workstation to the VM, and
+  from the VM to the Pod.
+  ```bash
+  # login from your workstation, forwarding 7007 -> localhost:7007 on the remote VM.
+  ssh -L7007:localhost:7007 -i ~/.ssh/nephio ubuntu@$IP
+  # now you are in the remote VM, in there run
+  kubectl --kubeconfig ~/.kube/nephio.config port-forward --namespace=nephio-webui svc/nephio-webui 7007
+  ```
+* On your workstation browse to [http://localhost:7007](http://localhost:7007)
+* Create a second, separate login to the workshop VM for CLI access to the
+  clusters:
+  ```bash
+  ssh -i ~/.ssh/nephio ubuntu@$IP
+  ```
