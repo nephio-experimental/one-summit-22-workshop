@@ -139,7 +139,7 @@ spec:
             uePool:
               networkInstance: "sample-vpc"
               networkName: "ue-net"
-              prefixSize: "8"
+              prefixSize: "16"
             endpoint:
               networkInstance: "sample-vpc"
               networkName: "sample-n6-net"
