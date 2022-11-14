@@ -144,3 +144,52 @@ spec:
               networkInstance: "sample-vpc"
               networkName: "sample-n6-net"
 ```
+
+## Troubleshooting and Utility Commands
+
+This is all prototype code. It is not anywhere near production ready. As such,
+it sometimes behaves badly. This section gives a few commands that are useful in
+resetting your environment.
+
+
+### Restarting Controllers
+
+```bash
+
+# Restart each controller
+kubectl --kubeconfig /.kube/nephio.config -n nephio-system rollout restart deploy package-deployment-controller-controller
+kubectl --kubeconfig /.kube/nephio.config -n nephio-system rollout restart deploy nephio-5gc-controller
+kubectl --kubeconfig /.kube/nephio.config -n nephio-system rollout restart deploy ipam-controller
+kubectl --kubeconfig /.kube/nephio.config -n nephio-system rollout restart deploy nf-injector-controller
+
+# Check to see if the restart is done
+kubectl --kubeconfig /.kube/nephio.config -n nephio-system get po
+```
+
+### Restarting the Web UI
+
+```bash
+
+# Restart the deployment
+kubectl --kubeconfig /.kube/nephio.config -n nephio-webui rollout restart deploy nephio-webui
+
+# Check if the restart is complete
+
+kubectl --kubeconfig /.kube/nephio.config -n nephio-webui get po
+```
+
+### Cleaning Up Everything
+
+```bash
+# Remove the topology resource
+kubectl --kubeconfig /.kube/nephio.config delete fivegcoretopology fivegcoretopology-sample
+
+# The PackageDeployment it generated should be gone (garbage collected)
+kubectl --kubeconfig /.kube/nephio.config get packagedeployments
+
+# PackageRevisions are NOT deleted (TODO item)
+kpt alpha rpkg --kubeconfig /.kube/nephio.config get | grep packagedeployment
+
+# Delete them
+kpt alpha rpkg --kubeconfig /.kube/nephio.config del -n default <list package revision names here>
+```
