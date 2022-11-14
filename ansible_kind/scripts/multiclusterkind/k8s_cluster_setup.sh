@@ -1,19 +1,10 @@
 #!/bin/bash
-USER=${1:-}
-
-if [[ ! ${USER} ]]; then
-    USER=$(groups | awk '{print $1}')
-else
-    echo "Please provide user"
-    exit 1
-fi
 
 function install_docker() {
-    local USER="$1"
     sudo apt-get -y update
     sudo apt-get -y install docker.io apt-transport-https make gcc cmake
     sudo systemctl enable docker.service
-    sudo usermod -aG docker "${USER}"
+    sudo usermod -aG docker "${USER:-ubuntu}"
     sudo chmod 777 /var/run/docker.sock
 }
 
@@ -33,13 +24,23 @@ function install_go() {
     sudo tar -C /usr/local -zxvf go1.19.3.linux-amd64.tar.gz >/dev/null 2>&1
     mkdir -p ~/go/{bin,pkg,src}
 
+    sudo mkdir -p /etc/profile.d/
+    # shellcheck disable=SC2016
+    echo 'export PATH=$PATH:/usr/local/go/bin' | sudo tee /etc/profile.d/path.sh >/dev/null
+
     echo fs.inotify.max_user_watches=655360 | sudo tee -a /etc/sysctl.conf
     echo fs.inotify.max_user_instances=1280 | sudo tee -a /etc/sysctl.conf
 }
 
-echo "Installing Docker"
-install_docker "${USER}"
-echo "Installing Kind"
-install_kind
-echo "Installing go"
-install_go
+if ! command -v docker >/dev/null; then
+    echo "Installing Docker"
+    install_docker
+fi
+if ! command -v kind >/dev/null; then
+    echo "Installing Kind"
+    install_kind
+fi
+if ! command -v go >/dev/null; then
+    echo "Installing go"
+    install_go
+fi

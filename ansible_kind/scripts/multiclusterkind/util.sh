@@ -57,8 +57,8 @@ function util::verify_go_version {
 # ARCH support list: amd64,arm64
 # OS support list: linux,darwin
 function util::install_environment_check {
-    local ARCH=${1:-}
-    local OS=${2:-}
+    local ARCH=${1-}
+    local OS=${2-}
     if [[ $ARCH =~ ^(amd64|arm64)$ ]]; then
         if [[ $OS =~ ^(linux|darwin)$ ]]; then
             return 0
@@ -179,7 +179,7 @@ function util::wait_for_condition() {
     local msg=$1
     # condition should be a string that can be eval'd.
     local condition=$2
-    local timeout=${3:-}
+    local timeout=${3-}
 
     local start_msg="Waiting for ${msg}"
     #local error_msg="[ERROR] Timeout waiting for ${msg}"
@@ -211,9 +211,9 @@ function util::setup_macvlan {
     local kubeconfig=${1}
     local context_name=${2}
     # Copying mac-vlan binary
-    docker cp "${HOME}"/multiclusterkind/macvlan/macvlan "${context_name}"-control-plane:/opt/cni/bin/
-    docker cp "${HOME}"/multiclusterkind/macvlan/static "${context_name}"-control-plane:/opt/cni/bin/
-    docker cp "${HOME}"/multiclusterkind/macvlan/tuning "${context_name}"-control-plane:/opt/cni/bin/
+    docker cp ./macvlan/macvlan "${context_name}"-control-plane:/opt/cni/bin/
+    docker cp ./macvlan/static "${context_name}"-control-plane:/opt/cni/bin/
+    docker cp ./macvlan/tuning "${context_name}"-control-plane:/opt/cni/bin/
     docker exec "${context_name}"-control-plane chown -R root:root /opt/cni/bin/macvlan
     docker exec "${context_name}"-control-plane chown -R root:root /opt/cni/bin/static
     docker exec "${context_name}"-control-plane chown -R root:root /opt/cni/bin/tuning
@@ -247,7 +247,7 @@ function util::create_cluster() {
     local kubeconfig=${2}
     local kind_image=${3}
     local log_path=${4}
-    local cluster_config=${5:-}
+    local cluster_config=${5-}
 
     mkdir -p "${log_path}"
     rm -rf "${log_path}/${cluster_name}.log"
@@ -287,7 +287,7 @@ function util::check_clusters_ready() {
     util::wait_for_condition 'running' "docker inspect --format='{{.State.Status}}' ${context_name}-control-plane" 300
 
     sleep 5
-    kubectl config rename-context "kind-${context_name}" "${context_name}" --kubeconfig="${kubeconfig_path}"
+    kubectl config rename-context "kind-${context_name}" "${context_name}" --kubeconfig="${kubeconfig_path}" || :
 
     local os_name
     os_name=$(go env GOOS)
