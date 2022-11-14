@@ -46,7 +46,7 @@ else
     util::install_kubectl "" "${BS_ARCH}" "${BS_OS}"
 fi
 
-clusters=(nephio regional edge1 edge2)
+clusters=(nephio regional edge-1 edge-2)
 #prepare for kindClusterConfig
 TEMP_PATH=$(mktemp -d)
 echo -e "Preparing kindClusterConfig in path: ${TEMP_PATH}"
