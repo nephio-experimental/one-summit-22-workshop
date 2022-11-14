@@ -6,6 +6,6 @@ metadata:
     nephio.org/gateway: "true"
 spec:
   kind: network
-  prefix: 10.0.1.1/24
+  prefix: 10.0.0.1/24
   network: sample-n3-net
   networkInstance: sample-vpc
