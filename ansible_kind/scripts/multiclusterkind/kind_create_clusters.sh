@@ -70,7 +70,9 @@ EOF
     sed -i'' -e "s/{{service_subnet}}/${SERVICE_SUBNET}/g" "${TEMP_PATH}"/"${clustername}".yaml
 
     #2. Create Cluster
-    util::create_cluster "${clustername}" "${KUBECONFIG_PATH}/${clustername}.config" "${CLUSTER_VERSION}" "${KIND_LOG_FILE}" "${TEMP_PATH}"/"${clustername}".yaml
+    if ! kind get clusters -q | grep -q "${clustername}"; then
+        util::create_cluster "${clustername}" "${KUBECONFIG_PATH}/${clustername}.config" "${CLUSTER_VERSION}" "${KIND_LOG_FILE}" "${TEMP_PATH}"/"${clustername}".yaml
+    fi
 
     #wait until the host cluster ready
     echo "Waiting for the host clusters to be ready..."
