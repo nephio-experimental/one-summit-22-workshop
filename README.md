@@ -166,6 +166,22 @@ kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system rollout restart depl
 kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system get po
 ```
 
+### Viewing Controller Logs
+
+```bash
+# PackageDeployment controller
+kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system logs -c controller -l app.kubernetes.io/name=package-deployment-controller
+
+# FiveGCoreTopologyController
+kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system logs -c controller -l app.kubernetes.io/name=nephio-5gc
+
+# NF Injector
+kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system logs -c controller -l app.kubernetes.io/name=nf-injector
+
+# IPAM controller
+kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system logs -c controller -l app.kubernetes.io/name=ipam
+```
+
 ### Restarting the Web UI
 
 ```bash
@@ -181,15 +197,10 @@ kubectl --kubeconfig ~/.kube/nephio.config -n nephio-webui get po
 ### Cleaning Up Everything
 
 ```bash
-# Remove the topology resource
-kubectl --kubeconfig ~/.kube/nephio.config delete fivegcoretopology fivegcoretopology-sample
 
-# The PackageDeployment it generated should be gone (garbage collected)
-kubectl --kubeconfig ~/.kube/nephio.config get packagedeployments
+# Run the clean.sh to see what it will do
+~/multiclusterkind/clean.sh
 
-# PackageRevisions are NOT deleted (TODO item)
-kpt alpha rpkg --kubeconfig ~/.kube/nephio.config get | grep packagedeployment
-
-# Delete them
-kpt alpha rpkg --kubeconfig ~/.kube/nephio.config del -n default <list package revision names here>
+# make sure you really want to do what it says, then
+~/multiclusterkind/clean.sh --force
 ```
