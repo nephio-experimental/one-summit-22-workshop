@@ -264,6 +264,10 @@ model, we will use a caching DNS instance. We had intended to use the SMF and a
 future version of this workshop will do so, but unfortunately it is not
 available yet.
 
+The following diagram depicts the relationship of the CRDs used in this exercise:
+
+![Nephio Network Functions CRDs](nephio-upf-crds.jpg)
+
 Starting with the UPF journey, here is what you will do:
 1. Create an organizational version of the free5gc operator package
 1. Deploy that package across the edge clusters
