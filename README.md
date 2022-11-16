@@ -57,22 +57,75 @@ package-deployment-controller-controller-785688cb75-nnbvt   2/2     Running   0 
 ubuntu@nephio-poc-001:~$
 ```
 
+## Some Concepts and Terminology
+
+A *Custom Resource Definition* or *CRD* is a Kubernetes extension mechanism for
+adding custom data types to Kubernetes. The CRDs are the schemas - analogous to
+table definitions in a relational database for example. The instances of those -
+analogous to rows in a RDBMS - are called *Custom Resources* or *CRs*. People
+often accidentally say "CRDs" when they mean "CRs", so be sure to ask for
+clarification if the context doesn't make it clear which is meant.
+
+In Kubernetes, resources - built-in ones as well as CRs - are processed by
+*controllers*. A controller *actuates* the resource. For example, K8s
+actuates a Service with Type LoadBalancer by creating a cloud provider
+load balancer instance. Since Kubernetes is
+*declarative*, it doesn't just actuate once. Instead, it actively reconciles
+the intent declared in the resource, with the actual state of the managed
+entity. If the state of the entity changes (a Pod is destroyed), Kubernetes will
+modify or recreate the entity to match the desired state. And of course if the
+intended state changes, Kubernetes will actuate the new intention. Speaking
+precisely, a *controller* manages one or a few very closely related types of
+resources. A *controller manager* is single binary that embeds multiple
+controllers, and an *operator* is a set of these that manages a particular type
+of workload. Speaking loosely, *controller* and *operator* are often used
+interchangeably, though an *operator* always refers to code managing CRs rather
+than Kuberenetes built-in types.
+
+*Packages* or *Kpt Packages* are bundles of Kubernetes resource files, along
+with a Kptfile (also in Kubernetes Resource Model or KRM format). They provide
+the basic unit of management in the Kpt toolchain. This toolchain is used to
+manage the configuration before it reaches the Kubernetes API server. This
+"shift left" model is critical to allowing **safe** collaborative, automated
+configuration creation and editing, because errors or partial configurations can
+be resolved prior to affecting operations.
+
+A package may have a single *upstream* parent, and many *downstream*
+descendants. The Kptfiles in these packages are used to maintain the
+relationships, capturing ancestry relationships like those shown below.
+
+![Package Ancestry](package-ancestry.png)
+
+By tracking these relationships, changes at the original source can be
+propagated via controlled automation down the tree.
+
+## Package Lifecycle
+
+![Package Lifecycle](package-lifecycle.png)
+
 ## Things To Try
 
 **Work In Progress Section**
 
-### Create an Organizational Version of the free5gc Operator
+### Create an Organizational Version of the free5gc Operator Package
 Part of the idea of Nephio is to help manage the relationship between vendor,
 organizational, team, and individual deployment variants of each package.
 
 Let's create our own organizational variant of the upstream free5gc package,
 using the Web UI.
 
+From the **Dashboard**, choose the *catalog* link under **Organizational
+Blueprints**. This represents the private catalog of packages that have been
+customized for your organization. In the resulting screen, push the **ADD
+ORGANIZATIONAL BLUEPRINT** button.
+
 ...results in free5gc-operator package in the `catalog` repository...
 
 ### Deploy the free5gc Operator
 We can use a `PackageDeployment` resource to create a multi-cluster deployment
 across all edge clusters of our customized `free5gc-operator` package.
+
+We have UI screen to do this.
 
 This YAML tells the package deployment controller to create package revisions in
 each of the repositories for the edge clusters, based on our version of the
@@ -144,6 +197,10 @@ spec:
               networkInstance: "sample-vpc"
               networkName: "sample-n6-net"
 ```
+
+## What's Happening Under the Hood
+
+![Prototype Flow](nephio-poc-nov.jpg)
 
 ## Troubleshooting and Utility Commands
 
