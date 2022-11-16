@@ -1,5 +1,25 @@
 # ONE Summit 2022 Nephio Workshop
 
+## Table of Contents
+  - [Welcome](#welcome)
+  - [Accessing Your Environment](#accessing-your-environment)
+  - [Custom Resources and Controllers](#custom-resources-and-controllers)
+  - [Packages](#packages)
+    - [Package Ancestry](#package-ancestry)
+    - [Package Configuration Journey](#package-configuration-journey)
+  - [Excercises](#excercises)
+    - [Create an Organizational Version of the free5gc Operator Package](#create-an-organizational-version-of-the-free5gc-operator-package)
+    - [Deploy the free5gc Operator](#deploy-the-free5gc-operator)
+    - [Deploy a `FiveGCoreTopology`](#deploy-a-fivegcoretopology)
+    - [The Shift Left Journey](#the-shift-left-journey)
+    - [Upgrading the Package](#upgrading the-package)
+  - [Troubleshooting and Utility Commands](#troubleshooting-and-utility-commands)
+    - [Restarting Controllers](#restarting-controllers)
+    - [Viewing Controller Logs](#viewing-controller-logs)
+    - [Restarting the Web UI](#restarting-the-web-ui)
+    - [Cleaning Up Everything](#cleaning-up-everything)
+
+## Welcome
 Welcome! Each participant has been provisioned a VM with a complete
 simulated multi-cluster environment with the Nephio proof-of-concept code
 already pre-installed, as shown in the diagram below.
@@ -435,17 +455,31 @@ what is there in the Multus configuration of the underlying clusters. So, the
 `Pod` will be stuck in `ContainerCreating`. Of course, if the underlying
 infrastructure were provisioned by Nephio, too, then this wouldn't happen...
 
+### The Shift Left Journey
 
-
-
-### Manage a Package Upgrade
+Now let's try out the "shift left" style of management. In this case, there is
+no operator running on the edge cluster. One of the benefits of this is that we
+can see the exacty Kubernetes resources that will be delivered to the cluster,
+without any operator in between us and Kubernetes, changing what Kubernetes does.
+This also means that we have more control over those resources.
 
 - Create a catalog version of the caching-dns-scaled package.
-- Create a Package Deployment for it across all workload clusters
-- Make a change to the catalog package, resulting in a new package revision
-- The UI will identify that downstream packages have an upgrade available
-- Use the UI to upgrade the packages
+- Create a Package Deployment for it across all workload clusters (leave *Site
+  Type* blank).
+- Observe how the injected `ClusterScaleProfile` is used to modify the
+  `ConfigMap` resources (the `Deployment` resource changes are not yet
+  implemented).
 
+### Upgrading the Package
+
+With the operator model, any change to the manifests controlled by the operator
+requires an upgrade to the operator itself. With the shift left model, we can
+update the packages directly.
+- Make a change to the catalog package, perhaps adding a new annotation or
+  changing the ConfigMap contents. Propose and approve the change, resulting
+  in a new package revision in the catalog repository.
+- The UI will identify that downstream packages have an upgrade available.
+- Use the UI to upgrade the packages.
 
 ## Troubleshooting and Utility Commands
 
