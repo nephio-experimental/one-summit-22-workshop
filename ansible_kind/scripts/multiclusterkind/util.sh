@@ -211,9 +211,9 @@ function util::setup_macvlan {
     local kubeconfig=${1}
     local context_name=${2}
     # Copying mac-vlan binary
-    docker cp ./macvlan/macvlan "${context_name}"-control-plane:/opt/cni/bin/
-    docker cp ./macvlan/static "${context_name}"-control-plane:/opt/cni/bin/
-    docker cp ./macvlan/tuning "${context_name}"-control-plane:/opt/cni/bin/
+    docker cp "${HOME}/multiclusterkind/macvlan/macvlan" "${context_name}"-control-plane:/opt/cni/bin/
+    docker cp "${HOME}/multiclusterkind/macvlan/static" "${context_name}"-control-plane:/opt/cni/bin/
+    docker cp "${HOME}/multiclusterkind/macvlan/tuning" "${context_name}"-control-plane:/opt/cni/bin/
     docker exec "${context_name}"-control-plane chown -R root:root /opt/cni/bin/macvlan
     docker exec "${context_name}"-control-plane chown -R root:root /opt/cni/bin/static
     docker exec "${context_name}"-control-plane chown -R root:root /opt/cni/bin/tuning
