@@ -2,9 +2,14 @@
 
 Welcome! Each participant has been provisioned a VM with a complete
 simulated multi-cluster environment with the Nephio proof-of-concept code
-already pre-installed, as described in our [participant VM](participant-vm.md)
-page.  Please take a look at that page to get an understanding of the
-environment.
+already pre-installed, as shown in the diagram below.
+
+![Environment Overview](nephio-workshop.svg)
+
+More details are available on the [participant VM](participant-vm.md)
+page.
+
+## Accessing Your Environment
 
 The organizers will provide you with an IP address for your VM and the ssh
 private key that can be used to login to the machine. You will need an ssh
@@ -214,13 +219,53 @@ relationships, capturing ancestry relationships like those shown below.
 By tracking these relationships, changes at the original source can be
 propagated via controlled automation down the tree.
 
-### Package Lifecycle
+### Package Configuration Journey
 
-![Package Lifecycle](package-lifecycle.png)
+![Package Configuration Journey](package-lifecycle.png)
 
-## Things To Try
+## Excercises
 
-**Work In Progress Section**
+The environment you start with is a "blank slate". It has all the components of
+the Nephio PoC installed, but does not have network functions and operators
+installed.
+
+Today, we will see two different ways of managing workloads in a Nephio-based
+platform. The first will follow a traditional "operator" model. In this model,
+we run an operator on the edge clusters, which processes a CR specific to that
+operator. In doing so, it creates the Kubernetes resources needed to run that
+workload. The second is a "shift left" model, in which the Kubernetes resources
+needed to run the workload are generated on the management cluster, in the
+configuration storage, without any need to run an operator on the workload
+cluster. Both of these are valid and have their pros and cons, and both will be
+needed in a real world deployment.
+
+For the operator model example, we will use the free5gc UPF. For the shift-left
+model, we will use a caching DNS instance. We had intended to use the SMF and a
+future version of this workshop will do so, but unfortunately it is not
+available yet.
+
+Starting with the UPF journey, here is what you will do:
+1. Create an organizational version of the free5gc operator package
+1. Deploy that package across the edge clusters
+1. Configure a `FiveGCoreTopology` resource that contains the UPF configuration
+   that is invariant across the set of clusters.
+1. Observe how the system interacts to fully fill out the configuration,
+   constructing the `UPFDeployment` custom resource.
+1. Publish the package so that the `UPFDeployment` gets delivered to the edge
+   clusters.
+1. Observe how the free5gc operator running in the edge cluster picks up the
+   `UPFDeployment` and uses it to render a `ConfigMap` and `Deployment`
+   resource, thus running the free5gc UPF.
+
+For the caching DNS journey, here is the overview:
+1. Create an organizational version of the caching DNS package.
+1. Deploy that package across all of the workload clusters.
+1. Observe how the system customizes the package for each cluster.
+1. Publish the package to the workload clusters.
+1. Observe the running package in the clusters.
+1. Create a new, updated version of your caching DNS package.
+1. Observe how the system discovers that an upgrade is available.
+1. Upgrade and publish the package to a workload cluster.
 
 ### Create an Organizational Version of the free5gc Operator Package
 Part of the idea of Nephio is to help manage the relationship between vendor,
@@ -229,12 +274,30 @@ organizational, team, and individual deployment variants of each package.
 Let's create our own organizational variant of the upstream free5gc package,
 using the Web UI.
 
-From the **Dashboard**, choose the *catalog* link under **Organizational
+* From the **Dashboard**, choose the *catalog* link under **Organizational
 Blueprints**. This represents the private catalog of packages that have been
-customized for your organization. In the resulting screen, push the **ADD
-ORGANIZATIONAL BLUEPRINT** button.
-
-...results in free5gc-operator package in the `catalog` repository...
+customized for your organization.
+* In the resulting screen, push the **ADD ORGANIZATIONAL BLUEPRINT** button.
+* In the **Add Organizational Blueprint** screen:
+    * Choose "Create a new organizational blueprint by cloning an external
+      blueprint".
+    * Choose "free5gc-packages".
+    * Choose "free5gc-operator".
+    * Click Next
+    * Click Next in the Metadata section.
+    * Click Next in the Namespace section.
+    * Click Next in the Validate Resources section.
+    * Click the **CREATE ORGANIZATIONAL BLUEPRINT** button.
+* The next screen is the package editor, for the new, *Draft* package you have
+  just created. In order to make it available for deployment, we need to publish
+  it.
+    * Click the **PROPOSE** button.
+    * It will change to **APPROVE** momentarily. Click that button.
+    * Note: there is an occasional issue where you will see an "Internal error".
+      This is a known bug. Just refresh the page and try again.
+* You can click back on the *Package Management* link to go back to the
+  **Dashboard**, where you will see your new package is available as an
+  organizational blueprint.
 
 ### Deploy the free5gc Operator
 We can use a `PackageDeployment` resource to create a multi-cluster deployment
@@ -242,42 +305,43 @@ across all edge clusters of our customized `free5gc-operator` package.
 
 We have UI screen to do this.
 
-This YAML tells the package deployment controller to create package revisions in
-each of the repositories for the edge clusters, based on our version of the
-operator package (note the `repository` is `catalog` not `free5gc-packages`):
-
-```yaml
-apiVersion: automation.nephio.org/v1alpha1
-kind: PackageDeployment
-metadata:
-  name: free5gc-operator-edge
-  namespace: default
-spec:
-  name: free5gc-operator
-  namespace: free5gc
-  packageRef:
-    packageName: free5gc-operator
-    repository: catalog
-    revision: v1
-  selector:
-    matchLabels:
-      nephio.org/region: us-central1
-      nephio.org/site-type: edge
-```
-
-Save the YAML above in a file, `pd-free5gc-operator.yaml` on your participant
-VM. Then, you can deploy it with:
-
-```bash
-kubectl --kubeconfig ~/.kube/nephio.config apply -f pd-free5gc-operator.yaml
-```
+* From the **Dashboard**, clicke the **MANAGE PACKAGES ACROSS CLUSTERS** button.
+* Click the **ADD PACKAGE DEPLOYMENT** button.
+* Choose "Deploy a organizational blueprint across a number of clusters".
+* Choose "catalog" for the *Source Organizational Blueprint Repository*.
+* Choose "free5gc-operator" for the *Package Reference*.
+* Click Next
+* Choose "us-central1" for the *Region*.
+* Leave *Site* blank.
+* Choose "edge" for the *Site Type*.
+* Click Next
+* Click Next in the Metadata section
+* Click the **CREATE PACKAGE DEPLOYMENT** button.
 
 After a few minutes, you should see the package in Draft form on each edge
-cluster, as shown in the UI screenshot below.
-
-**Screenshot WIP**
+cluster. For each of these, click on the package to go to the package editor
+screen, **PROPOSE** and **APPROVE** to push the actual packages to the edge
+clusters.
 
 ### Deploy a `FiveGCoreTopology`
+The edge clusters are now ready to receive `UPFDeployment` resources that can be
+used to run the UPF workloads.
+
+Rather than manually creating those, we are going to use another controlling
+resources, called a `FiveGCoreTopology` resource. The idea of this resource
+(which is incomplete at this time), is that it represents configurations of your
+5g core network functions in a cluster-neutral way, as well as how those
+functions interrelate, and a selector for the clusters that should run that
+function configuration.  Right now, only the UPF portion is working.
+
+Save the YAML below in a file, `topo.yaml` on your participant
+VM:
+
+```bash
+cat > topo.yaml
+(copy and paste the YAML, then type Control-D to close the file)
+```
+
 ```yaml
 apiVersion: nf.nephio.org/v1alpha1
 kind: FiveGCoreTopology
@@ -313,6 +377,67 @@ spec:
               networkName: "sample-n6-net"
 ```
 
+Then, you can deploy it with:
+
+```bash
+kubectl --kubeconfig ~/.kube/nephio.config apply -f topo.yaml
+```
+
+What does the system do with this resources?
+
+1. It generates a `PackageDeployment` resource to fan out the
+   `free5gc-upf` package across the edge clusters, by following the
+   *upfClassName* to the "free5gc-upf" `UPFClass`, which in turn contains a
+   package reference.
+1. That package includes two "local config" objects (discussed above), one for
+   the `ClusterContext` and one for the `UPFDeployment` itself.
+1. The package deployment controller will inject the `ClusterContext`, which you
+   can see in the *Conditions* tab of a free5gc-upf package instantiated by this
+   process.
+1. The `UPFDeployment` cannot be injected by the package deployment controller,
+   but instead needs another controller, the *nf injector controller* to create
+   it. That controller will see the `false` condition of the
+   `UPFDeployment` condition type, and it will use the UPF configuration
+   information from the `FiveGCoreTopology` resource, along with information from
+   the injected `ClusterContext`, to generate the skeleton of
+   the `UPFDeployment`. However, it doesn't know how to allocate IP addresses.
+   Instead, it will generate new, local config resources of type
+   `IPAMAllocation`, and associated package conditions set to `false`.
+1. The *IPAM injector* will see these new package conditions, and will use the
+   information in them to request IP addresses from the *IPAM controller*,
+   storing those IPs back into the *status* field of the `IPAMAllocation`.
+1. A kpt function, *nephio-ipam-upf-fn*, that is included in the *Kptfile*'s
+   pipeline, will copy the IP addresses from the *status* to the right places in
+   the `UPFDeployment`.
+1. Another kpt function, *nad-inject-fn*, will generate the Multus
+   `NetworkAttachmentDefinition` resources using information from the
+   `IPAMAllocation` resources.
+
+The diagram below shows this interaction.
+
+![Prototype Flow](nephio-poc-nov.jpg)
+
+You can observe this by watching how the package automatically progresses
+through conditions. You will need to refresh your browser page on the package
+editor screen for the `agg-layer-upf` deployment.
+
+Once all the conditions go green, you can **PROPOSE** and **APPROVE** the
+package, delivering the completed `UPFDeployment` to the edge cluster. Then, you
+can check to see that the `UPFDeployment` is delivered to the edge cluster, and
+that the operator has created the associated `ConfigMap` and `Deployment`:
+
+```bash
+kubectl --kubconfig ~/.kube/edge-1.config -n upf get deploy,cm,network-attachment-definition,upfdeployment,po
+```
+
+Unfortunately, we did not *quite* get there with aligning our configuration with
+what is there in the Multus configuration of the underlying clusters. So, the
+`Pod` will be stuck in `ContainerCreating`. Of course, if the underlying
+infrastructure were provisioned by Nephio, too, then this wouldn't happen...
+
+
+
+
 ### Manage a Package Upgrade
 
 - Create a catalog version of the caching-dns-scaled package.
@@ -321,9 +446,6 @@ spec:
 - The UI will identify that downstream packages have an upgrade available
 - Use the UI to upgrade the packages
 
-## What's Happening Under the Hood
-
-![Prototype Flow](nephio-poc-nov.jpg)
 
 ## Troubleshooting and Utility Commands
 
