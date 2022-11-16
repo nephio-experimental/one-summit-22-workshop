@@ -12,7 +12,7 @@
     - [Deploy the free5gc Operator](#deploy-the-free5gc-operator)
     - [Deploy a `FiveGCoreTopology`](#deploy-a-fivegcoretopology)
     - [The Shift Left Journey](#the-shift-left-journey)
-    - [Upgrading the Package](#upgrading the-package)
+    - [Upgrading the Package](#upgrading-the-package)
   - [Troubleshooting and Utility Commands](#troubleshooting-and-utility-commands)
     - [Restarting Controllers](#restarting-controllers)
     - [Viewing Controller Logs](#viewing-controller-logs)
