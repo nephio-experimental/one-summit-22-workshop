@@ -98,3 +98,5 @@ for kubeconfig in ~/.kube/*.config; do
     fi
     _install_configsync "$kubeconfig"
 done
+
+touch /home/ubuntu/.done
