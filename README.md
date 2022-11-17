@@ -451,7 +451,7 @@ can check to see that the `UPFDeployment` is delivered to the edge cluster, and
 that the operator has created the associated `ConfigMap` and `Deployment`:
 
 ```bash
-kubectl --kubconfig ~/.kube/edge-1.config -n upf get deploy,cm,network-attachment-definition,upfdeployment,po
+kubectl --kubeconfig ~/.kube/edge-1.config -n upf get deploy,cm,network-attachment-definition,upfdeployment,po
 ```
 
 Unfortunately, we did not *quite* get there with aligning our configuration with
