@@ -1,23 +1,24 @@
 # ONE Summit 2022 Nephio Workshop
 
 ## Table of Contents
-  - [Welcome](#welcome)
-  - [Accessing Your Environment](#accessing-your-environment)
-  - [Custom Resources and Controllers](#custom-resources-and-controllers)
-  - [Packages](#packages)
-    - [Package Ancestry](#package-ancestry)
-    - [Package Configuration Journey](#package-configuration-journey)
-  - [Excercises](#excercises)
-    - [Create an Organizational Version of the free5gc Operator Package](#create-an-organizational-version-of-the-free5gc-operator-package)
-    - [Deploy the free5gc Operator](#deploy-the-free5gc-operator)
-    - [Deploy a `FiveGCoreTopology`](#deploy-a-fivegcoretopology)
-    - [The Shift Left Journey](#the-shift-left-journey)
-    - [Upgrading the Package](#upgrading-the-package)
-  - [Troubleshooting and Utility Commands](#troubleshooting-and-utility-commands)
-    - [Restarting Controllers](#restarting-controllers)
-    - [Viewing Controller Logs](#viewing-controller-logs)
-    - [Restarting the Web UI](#restarting-the-web-ui)
-    - [Cleaning Up Everything](#cleaning-up-everything)
+- [Welcome](#welcome)
+- [Accessing Your Environment](#accessing-your-environment)
+- [Custom Resources and Controllers](#custom-resources-and-controllers)
+- [Packages](#packages)
+  - [Package Ancestry](#package-ancestry)
+  - [Package Configuration Journey](#package-configuration-journey)
+- [Excercises](#excercises)
+  - [Create an Organizational Version of the free5gc Operator Package](#create-an-organizational-version-of-the-free5gc-operator-package)
+  - [Deploy the free5gc Operator](#deploy-the-free5gc-operator)
+  - [Deploy a `FiveGCoreTopology`](#deploy-a-fivegcoretopology)
+  - [The Shift Left Journey](#the-shift-left-journey)
+  - [Upgrading the Package](#upgrading-the-package)
+- [Troubleshooting and Utility Commands](#troubleshooting-and-utility-commands)
+  - [Restarting Controllers](#restarting-controllers)
+  - [Viewing Controller Logs](#viewing-controller-logs)
+  - [Restarting the Web UI](#restarting-the-web-ui)
+  - [Cleaning Up Everything](#cleaning-up-everything)
+- [Summary of Component Code](#summary-of-component-code)
 
 ## Welcome
 Welcome! Each participant has been provisioned a VM with a complete
@@ -544,3 +545,50 @@ kubectl --kubeconfig ~/.kube/nephio.config -n nephio-webui get po
 # make sure you really want to do what it says, then
 ~/multiclusterkind/clean.sh --force
 ```
+
+## Summary of Component Code
+
+The following list contains links to the code of the different components
+running in the demo.
+
+* [infra/](infra) contains the script for provisioning the demo VMs.
+* [ansible_kind/](ansible_kind) contains the scripts for provisioning the KinD
+  clusters, networking, and installing all the Nephio components in those
+  clusters.
+* [nephio-packages](https://github.com/nephio-project/nephio-packages) contains
+  the Kpt packages used to install the Nephio controllers, UI, and their
+  dependencies in the Nephio cluster, and ConfigSync in the workload clusters.
+  It also contains the CoreDNS example Kpt packages.
+* [packages/participant/](packages/participant) contains a Kpt package that is
+  installed in the Nephio KinD cluster. This package contains the Porch
+  repository resources, the Nephio Cluster and related resources, and the IPAM
+  configuration resources for the IPAM controller.
+* [free5gc-packages](https://github.com/nephio-project/free5gc-packages)
+  contains the Kpt packages for the free5gc operators and network functions.
+* [nephio-functions](https://github.com/nephio-project/nephio-functions)
+  contains the code for the `ApplyScaleProfile` function used in the CoreDNS
+  scaling example.
+* [nephio-controller-poc](https://github.com/nephio-project/nephio-controller-poc)
+  contains the code for the `PackageDeployment` controller. This is also where
+  the CRDs for the Nephio
+  [automation](https://github.com/nephio-project/nephio-controller-poc/tree/main/apis/automation/v1alpha1)
+  and [infra](https://github.com/nephio-project/nephio-controller-poc/tree/main/apis/infra/v1alpha1) APIs are located.
+* [free5gc-operator](https://github.com/nephio-project/nephio-pocs/blob/main/free5gc-operator)
+  contains the code for the free5gc operator that runs on the edge clusters, as
+  well as the [vendor-specific network function
+  APIs](https://github.com/nephio-project/nephio-pocs/tree/main/free5gc-operator/api/v1alpha1).
+* [nephio-5gc-controller](https://github.com/nephio-project/nephio-pocs/blob/main/nephio-5gc-controller)
+  contains the code for the `FiveGCoreTopology` controller. This is also where
+  the [vendor-neutral network function APIs](https://github.com/nephio-project/nephio-pocs/tree/main/nephio-5gc-controller/apis/nf/v1alpha1) are defined.
+* [nf-injector-controller](https://github.com/henderiw-nephio/nf-injector-controller) contains the code for the controller that combines data from the `ClusterContext`, `FiveGCoreTopology` resource, and `UPFClass` to inject a `UPFDeployment`
+  spec and associated IPAM allocation requests.
+* [nf-deploy-fn](https://github.com/henderiw-nephio/nf-deploy-fn) contains the
+  code for the Kpt function used to populate the `UPFDeployment` based on the
+  results of the IPAM allocation requests.
+* [nad-inject-fn](https://github.com/henderiw-nephio/nad-inject-fn) contains
+  the code for the Kpt function that generates Multus network attachement definitions based on a `UPFDeployment`
+  and the IP allocations.
+* [k8s-ipam](https://github.com/nokia/k8s-ipam) contains the code for the IPAM
+  system.
+* [kpt-backstage-plugins](https://github.com/GoogleContainerTools/kpt-backstage-plugins) contains the code for the UI.
+* [kpt](https://github.com/GoogleContainerTools/kpt) contains the code for `kpt` and Porch.
