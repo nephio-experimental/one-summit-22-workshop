@@ -590,5 +590,5 @@ running in the demo.
    and the IP allocations.
  * [k8s-ipam](https://github.com/nokia/k8s-ipam) contains the code for the IPAM
    system.
- * [Nephio/Porch WebUI](https://github.com/GoogleContainerTools/kpt-backstage-plugins) contains the code for the UI.
+ * [kpt-backstage-plugins](https://github.com/GoogleContainerTools/kpt-backstage-plugins) contains the code for the UI.
  * [kpt](https://github.com/GoogleContainerTools/kpt) contains the code for `kpt` and Porch.
