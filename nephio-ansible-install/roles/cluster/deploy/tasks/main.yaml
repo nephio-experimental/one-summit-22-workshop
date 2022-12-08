@@ -1,0 +1,24 @@
+## © 2022 Nokia
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+---
+- name: systctl config
+  become: true
+  lineinfile: 
+    path: /etc/sysctl.conf
+    line: "{{ item }}"
+  with_items:
+    - fs.inotify.max_user_watches=524288
+    - fs.inotify.max_user_instances=512
+
+- name: systctl config
+  become: true
+  shell: "{{ item }}"
+  with_items:
+    - sysctl fs.inotify.max_user_watches=524288
+    - sysctl fs.inotify.max_user_instances=512
+
+- name: deploy clusters
+  include_tasks: cluster_files.yaml
+  with_dict: "{{ clusters }}"
+  #ignore_errors: true

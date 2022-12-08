@@ -1,0 +1,158 @@
+## © 2022 Nokia
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+
+---
+- name: configure nephio package repo
+  shell: |
+    cat <<EOF | kubectl --kubeconfig ~/.kube/mgmt-config apply -f - 
+      apiVersion: config.porch.kpt.dev/v1alpha1
+      kind: Repository
+      metadata:
+        name: nephio-packages
+        namespace: default
+        labels:
+          kpt.dev/repository-content: external-blueprints
+      spec:
+        content: Package
+        deployment: false
+        git:
+          branch: main
+          directory: /
+          repo: https://github.com/nephio-project/nephio-packages.git
+        type: git
+    EOF
+
+- name: configure free5gc package repo
+  shell: |
+    cat <<EOF | kubectl --kubeconfig ~/.kube/mgmt-config apply -f - 
+      apiVersion: config.porch.kpt.dev/v1alpha1
+      kind: Repository
+      metadata:
+        name: free5gc-packages
+        namespace: default
+        labels:
+          kpt.dev/repository-content: external-blueprints
+      spec:
+        content: Package
+        deployment: false
+        git:
+          branch: main
+          directory: /
+          repo: https://github.com/nephio-project/free5gc-packages.git
+        type: git
+    EOF
+
+- name: deploy edge cluster manifests
+  include_tasks: manifest_files.yaml
+  with_dict: "{{ clusters }}"
+  when: item.key != "mgmt"
+
+- name: configure upfclass
+  shell: |
+    cat <<EOF | kubectl --kubeconfig ~/.kube/mgmt-config apply -f - 
+      apiVersion: nf.nephio.org/v1alpha1
+      kind: UPFClass
+      metadata:
+        name: free5gc-upf
+      spec:
+        packageRef:
+          repository: free5gc-packages
+          packageName: free5gc-upf
+          revision: v1
+        n3EndpointCount: 1
+        n4EndpointCount: 1
+        n6EndpointCount: 1
+        n9EndpointCount: 0
+        dnns:
+        - internet
+    EOF
+
+- name: configure 5G topology
+  shell: |
+    cat <<EOF | kubectl --kubeconfig ~/.kube/mgmt-config apply -f - 
+      apiVersion: nf.nephio.org/v1alpha1
+      kind: FiveGCoreTopology
+      metadata:
+        name: fivegcoretopology-sample
+      spec:
+        upfs:
+          - name: "agg-layer"
+            selector:
+              matchLabels:
+                nephio.org/region: us-central1
+                nephio.org/site-type: edge
+            namespace: "upf"
+            upf:
+              upfClassName: "free5gc-upf"
+              capacity:
+                uplinkThroughput: "1G"
+                downlinkThroughput: "10G"
+              n3:
+                - networkInstance: "sample-vpc"
+                  networkName: "sample-n3-net"
+              n4:
+                - networkInstance: "sample-vpc"
+                  networkName: "sample-n4-net"
+              n6:
+                - dnn: "internet"
+                  uePool:
+                    networkInstance: "sample-vpc"
+                    networkName: "ue-net"
+                    prefixSize: "16"
+                  endpoint:
+                    networkInstance: "sample-vpc"
+                    networkName: "sample-n6-net"
+    EOF
+
+- name: configure ipam
+  shell: |
+    cat <<EOF | kubectl --kubeconfig ~/.kube/mgmt-config apply -f -
+      apiVersion: ipam.nephio.org/v1alpha1
+      kind: NetworkInstance
+      metadata:
+        name: sample-vpc
+      spec:
+    ---
+      apiVersion: ipam.nephio.org/v1alpha1
+      kind: IPPrefix
+      metadata:
+        name: aggregate0
+      spec:
+        kind: aggregate
+        prefix: 10.0.0.0/8
+        networkInstance: sample-vpc
+    ---
+      apiVersion: ipam.nephio.org/v1alpha1
+      kind: IPPrefix
+      metadata:
+        name: sample-n3-net-prefix1
+        labels:
+          nephio.org/gateway: "true"
+      spec:
+        prefix: 10.0.0.1/24
+        network: sample-n3-net
+        networkInstance: sample-vpc
+    ---
+      apiVersion: ipam.nephio.org/v1alpha1
+      kind: IPPrefix
+      metadata:
+        name: sample-n4-net-prefix1
+        labels:
+          nephio.org/gateway: "true"
+      spec:
+        prefix: 192.168.1.1/24
+        network: sample-n4-net
+        networkInstance: sample-vpc
+    ---
+      apiVersion: ipam.nephio.org/v1alpha1
+      kind: IPPrefix
+      metadata:
+        name: sample-n6-net-prefix1
+        labels:
+          nephio.org/gateway: "true"
+      spec:
+        prefix: 172.0.0.1/24
+        network: sample-n6-net
+        networkInstance: sample-vpc
+    EOF

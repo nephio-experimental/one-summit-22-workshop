@@ -1,0 +1,7 @@
+## © 2022 Nokia
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+---
+- name: destroy topo
+  become: true
+  shell: clab destroy -t {{ tmp_directory }}/topology.yaml

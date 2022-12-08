@@ -1,0 +1,34 @@
+## © 2022 Nokia
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+---
+- name: delete repo nephio-{{ item.key }}
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/{{ github_organization }}/nephio-{{ item.key }}
+    headers:
+      Accept: application/vnd.github+json
+      Authorization: Bearer {{ github_token }}
+      X-GitHub-Api-Version: 2022-11-28
+    method: DELETE
+    status_code: 204
+    body_format: json
+  register: result
+  with_dict: "{{ clusters }}"
+  when:
+    - github_username is defined
+    - github_organization is defined
+- name: delete repo nephio-{{ item.key }}
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/{{ github_username }}/nephio-{{ item.key }}
+    headers:
+      Accept: application/vnd.github+json
+      Authorization: Bearer {{ github_token }}
+      X-GitHub-Api-Version: 2022-11-28
+    method: DELETE
+    status_code: 204
+    body_format: json
+  register: result
+  with_dict: "{{ clusters }}"
+  when:
+    - github_username is defined
+    - github_organization is not defined

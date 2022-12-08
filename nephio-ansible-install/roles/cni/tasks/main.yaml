@@ -1,0 +1,34 @@
+## © 2022 Nokia
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Create tmp cni directory
+  ansible.builtin.file:
+    path: "{{ tmp_directory }}/cni"
+    state: directory
+    mode: '0755'
+
+- name: Download cni archive
+  ansible.builtin.get_url:
+    url: https://github.com/containernetworking/plugins/releases/download/v{{ cni_version }}/cni-plugins-{{ host_os }}-{{ host_arch }}-v{{ cni_version }}.tgz
+    #url: "https://kind.sigs.k8s.io/dl/v{{ kind_version }}/kind-{{ host_os }}-{{ host_arch }}"
+    #checksum: "{{ kubectl_checksum_binary }}"
+    dest: "{{ tmp_directory }}"
+    mode: 0600
+  tags:
+    - cni
+
+- name: Unarchive cni archive
+  ansible.builtin.unarchive:
+    src: "{{ tmp_directory }}/cni-plugins-{{ host_os }}-{{ host_arch }}-v{{ cni_version }}.tgz"
+    dest: "{{ tmp_directory }}/cni"
+    remote_src: true
+  tags:
+    - cni
+
+#- name: Download cni binaries
+#  unarchive:
+#    src: https://github.com/containernetworking/plugins/releases/download/v0.8.6/cni-plugins-linux-amd64-v0.8.6.tgz
+#    dest: /opt/cni/bin/
+#    remote_src: true

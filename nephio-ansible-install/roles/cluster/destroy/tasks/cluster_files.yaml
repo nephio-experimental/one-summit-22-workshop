@@ -1,0 +1,18 @@
+## © 2022 Nokia
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+
+---
+
+- name: Check if cluster {{ item.key }} is running
+  shell: "kind get clusters | grep -w {{ item.key }}"
+  failed_when: false
+  register: cluster_name
+  tags:
+    - delete
+
+- name: Delete kind cluster {{ item.key }}
+  shell: "kind delete cluster --name {{ item.key }}"
+  tags:
+    - delete
+  when: cluster_name.stdout | length != 0

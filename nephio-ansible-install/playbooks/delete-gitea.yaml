@@ -1,0 +1,8 @@
+- hosts: vm
+  environment:
+    http_proxy: "{{proxy.http_proxy}}"
+    https_proxy: "{{proxy.https_proxy}}"
+    no_proxy: "{{proxy.no_proxy}}"
+  roles:
+    - { role: gitea/delete, tags: gitea }
+    

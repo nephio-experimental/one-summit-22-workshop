@@ -1,0 +1,10 @@
+## © 2022 Nokia
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+
+---
+- name: deploy multus
+  include_tasks: cluster_files.yaml
+  with_dict: "{{ clusters }}"
+  #ignore_errors: true
+  when: item.key != "mgmt"
