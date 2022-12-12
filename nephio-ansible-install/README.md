@@ -29,7 +29,7 @@ touch inventory/nephio.yaml
 
 Open an editor of your choice and paste the below in the inventory/nephio.yaml file.
 
---> You can choose between github repositories (remote) or gitea repositorys (local) by setting the respective vars in the inventory/nephio.yaml file (see below).
+--> You can choose between GitHub repositories (remote) or gitea repositorys (local) by setting the respective vars in the inventory/nephio.yaml file (see below).
 
 ```yaml
 all:

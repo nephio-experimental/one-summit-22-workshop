@@ -1,0 +1,15 @@
+apiVersion: nf.nephio.org/v1alpha1
+kind: UPFClass
+metadata:
+  name: free5gc-upf
+spec:
+  packageRef:
+    repository: free5gc-packages
+    packageName: free5gc-upf
+    revision: v1
+  n3EndpointCount: 1
+  n4EndpointCount: 1
+  n6EndpointCount: 1
+  n9EndpointCount: 0
+  dnns:
+  - internet

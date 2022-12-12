@@ -2,119 +2,55 @@
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
 ---
-- name: configure nephio-{{ item.key }} repo
-  shell: |
-    cat <<EOF | kubectl --kubeconfig ~/.kube/mgmt-config apply -f - 
-      apiVersion: config.porch.kpt.dev/v1alpha1
-      kind: Repository
-      metadata:
-        name: {{ item.key }}
-        namespace: default
-        labels:
-          kpt.dev/repository-content: external-blueprints
-      spec:
-        content: Package
-        deployment: true
-        git:
-          branch: main
-          directory: /
-          repo: https://github.com/{{ github_organization}}/nephio-{{ item.key }}.git
-          secretRef:
-            name: github-personal-access-token
-        type: git
-    EOF
+- name: github repo
+  set_fact:
+    github_repo: "{{ 'https://github.com/{{ github_organization}}/nephio-{{ item.key }}.git' if github_organization is defined else 'https://github.com/{{ github_username}}/nephio-{{ item.key }}.git' }}"
   when:
     - github_username is defined
-    - github_organization is defined
 
-- name: configure nephio-{{ item.key }} repo
-  shell: |
-    cat <<EOF | kubectl --kubeconfig ~/.kube/mgmt-config apply -f -
-      apiVersion: config.porch.kpt.dev/v1alpha1
-      kind: Repository
-      metadata:
-        name: {{ item.key }}
-        namespace: default
-        labels:
-          kpt.dev/repository-content: external-blueprints
-      spec:
-        content: Package
-        deployment: true
-        git:
-          branch: main
-          directory: /
-          repo: https://github.com/{{ github_username}}/nephio-{{ item.key }}.git
-          secretRef:
-            name: github-personal-access-token
-        type: git
-    EOF
+- name: copy edge github repo
+  template:
+    src: "{{ role_path }}/templates/github-edge-repo.j2"
+    dest: "{{ tmp_directory }}/github-edge-repo-{{item.key}}.yaml"
+    mode: 0644
   when:
     - github_username is defined
-    - github_organization is not defined
 
-- name: configure gitea-{{ item.key }} repo
-  shell: |
-    cat <<EOF | kubectl --kubeconfig ~/.kube/mgmt-config apply -f -
-      apiVersion: config.porch.kpt.dev/v1alpha1
-      kind: Repository
-      metadata:
-        name: gitea-{{ item.key }}
-        namespace: default
-        labels:
-          kpt.dev/repository-content: external-blueprints
-      spec:
-        content: Package
-        deployment: true
-        git:
-          branch: main
-          directory: /
-          repo: http://gitea:3000/nephio/nephio-{{ item.key }}.git
-          secretRef:
-            name: gitea-access-token
-        type: git
-    EOF
+- name: configure edge github repo
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/github-edge-repo-{{item.key}}.yaml
+  when:
+    - github_username is defined
+
+- name: copy edge gitea repo
+  template:
+    src: "{{ role_path }}/templates/gitea-edge-repo.j2"
+    dest: "{{ tmp_directory }}/gitea-edge-repo-{{item.key}}.yaml"
+    mode: 0644
   when:
     - gitea_username is defined
 
-- name: configure {{ item.key }} cluster
-  shell: |
-    cat <<EOF | kubectl --kubeconfig ~/.kube/mgmt-config apply -f -
-      apiVersion: infra.nephio.org/v1alpha1
-      kind: Cluster
-      metadata:
-        name: {{ item.key }}
-        labels:
-          nephio.org/region: us-central1
-          nephio.org/site-type: edge
-          nephio.org/site: {{ item.key }}
-      repositoryRef:
-        name: {{ item.key }}
-    EOF
+- name: configure edge gitea repo
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/gitea-edge_repo-{{item.key}}.yaml
+  when:
+    - gitea_username is defined
 
-- name: configure {{ item.key }} clustercontext
-  shell: |
-    cat <<EOF | kubectl --kubeconfig ~/.kube/mgmt-config apply -f -
-      apiVersion: infra.nephio.org/v1alpha1
-      kind: ClusterContext
-      metadata:
-        name: {{ item.key }}
-      spec:
-        siteCode: {{ item.key }}
-        cniConfig:
-          cniType: macvlan
-          masterInterface: eth1
-    EOF
+- name: copy cluster manifests
+  template:
+    src: "{{ role_path }}/templates/{{outer_item}}.j2"
+    dest: "{{ tmp_directory }}/{{outer_item}}-{{item.key}}.yaml"
+    mode: 0644
+  loop:
+    - cluster
+    - cluster-context
+    - cluster-scale-profile
+  loop_control:
+    loop_var: outer_item
 
-- name: configure {{ item.key }} clustercontext
-  shell: |
-    cat <<EOF | kubectl --kubeconfig ~/.kube/mgmt-config apply -f -
-      apiVersion: infra.nephio.org/v1alpha1
-      kind: ClusterScaleProfile
-      metadata:
-        name: {{ item.key }}
-      spec:
-        autoscaling: false
-        nodeMax: 6
-        siteDensity: low
-    EOF
-
+- name: configure cluster manifests
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/{{outer_item}}-{{item.key}}.yaml
+  loop:
+    - cluster
+    - cluster-context
+    - cluster-scale-profile
+  loop_control:
+    loop_var: outer_item

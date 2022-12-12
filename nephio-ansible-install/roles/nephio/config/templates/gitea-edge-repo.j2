@@ -1,0 +1,17 @@
+apiVersion: config.porch.kpt.dev/v1alpha1
+kind: Repository
+metadata:
+  name: gitea-{{ item.key }}
+  namespace: default
+  labels:
+    kpt.dev/repository-content: external-blueprints
+spec:
+  content: Package
+  deployment: true
+  git:
+    branch: main
+    directory: /
+    repo: http://gitea:3000/nephio/nephio-{{ item.key }}.git
+    secretRef:
+      name: gitea-access-token
+  type: git
