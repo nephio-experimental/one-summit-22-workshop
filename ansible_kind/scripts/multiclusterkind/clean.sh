@@ -20,7 +20,7 @@ if [[ $DEBUG == "true" ]]; then
 fi
 
 function usage {
-    printf "usage: $0 [ --force ]\n"
+    printf "usage: %s [ --force ]\n" "$0"
     exit 1
 }
 
