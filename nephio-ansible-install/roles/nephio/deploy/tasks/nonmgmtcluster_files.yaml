@@ -1,8 +1,13 @@
 ## © 2022 Nokia
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
-
 ---
+- name: github repo
+  set_fact:
+    github_repo: "{{ 'https://github.com/{{ github_organization}}/nephio-{{ item.key }}.git' if github_organization is defined else 'https://github.com/{{ github_username}}/nephio-{{ item.key }}.git' }}"
+  when:
+    - github_username is defined
+
 - name: deploy nephio-configsync on {{ item.key }} cluster
   shell: kpt --kubeconfig ~/.kube/{{ item.key }}-config live init nephio-configsync
   args: 
@@ -29,53 +34,22 @@
   when:
     - github_username is defined
 
-- name: configure nephio-configsync
-  shell: |
-    cat <<EOF | kubectl --kubeconfig ~/.kube/{{ item.key }}-config apply -f -
-      apiVersion: configsync.gke.io/v1beta1
-      kind: RootSync
-      metadata: # kpt-merge: config-management-system/nephio-mgmt-cluster-sync
-        name: repo-{{ item.key }}-sync
-        namespace: config-management-system
-        annotations:
-          config.kubernetes.io/depends-on: apiextensions.k8s.io/CustomResourceDefinition/rootsyncs.configsync.gke.io
-          internal.kpt.dev/upstream-identifier: 'configsync.gke.io|RootSync|config-management-system|nephio-mgmt-cluster-sync'
-      spec:
-        sourceFormat: unstructured
-        git:
-          repo: https://github.com/{{ github_organization}}/nephio-{{ item.key }}.git
-          branch: main
-          auth: token
-          secretRef:
-            name: github-personal-access-token
-    EOF
+- name: copy github root sync
+  template:
+    src: "{{ role_path }}/templates/{{outer_item}}.j2"
+    dest: "{{ tmp_directory }}/{{outer_item}}-{{item.key}}.yaml"
+    mode: 0644
+  loop:
+    - github-root-sync
+  loop_control:
+    loop_var: outer_item
   when:
     - github_username is defined
-    - github_organization is defined
 
-- name: configure nephio-configsync
-  shell: |
-    cat <<EOF | kubectl --kubeconfig ~/.kube/{{ item.key }}-config apply -f -
-      apiVersion: configsync.gke.io/v1beta1
-      kind: RootSync
-      metadata: # kpt-merge: config-management-system/nephio-mgmt-cluster-sync
-        name: repo-{{ item.key }}-sync
-        namespace: config-management-system
-        annotations:
-          config.kubernetes.io/depends-on: apiextensions.k8s.io/CustomResourceDefinition/rootsyncs.configsync.gke.io
-          internal.kpt.dev/upstream-identifier: 'configsync.gke.io|RootSync|config-management-system|nephio-mgmt-cluster-sync'
-      spec:
-        sourceFormat: unstructured
-        git:
-          repo: https://github.com/{{ github_username }}/nephio-{{ item.key }}.git
-          branch: main
-          auth: token
-          secretRef:
-            name: github-personal-access-token
-    EOF
+- name: configure github root sync
+  shell: kubectl --kubeconfig ~/.kube/{{ item.key }}-config apply -f {{ tmp_directory }}/github-root-sync-{{item.key}}.yaml
   when:
     - github_username is defined
-    - github_organization is not defined
 
 - name: Slurp gitea access token
   ansible.builtin.slurp:
@@ -96,25 +70,19 @@
   when:
     - gitea_username is defined
 
-- name: configure gitea-nephio-configsync
-  shell: |
-    cat <<EOF | kubectl --kubeconfig ~/.kube/{{ item.key }}-config apply -f -
-      apiVersion: configsync.gke.io/v1beta1
-      kind: RootSync
-      metadata: # kpt-merge: config-management-system/nephio-mgmt-cluster-sync
-        name: gitea-repo-{{ item.key }}-sync
-        namespace: config-management-system
-        annotations:
-          config.kubernetes.io/depends-on: apiextensions.k8s.io/CustomResourceDefinition/rootsyncs.configsync.gke.io
-          internal.kpt.dev/upstream-identifier: 'configsync.gke.io|RootSync|config-management-system|nephio-mgmt-cluster-sync'
-      spec:
-        sourceFormat: unstructured
-        git:
-          repo: http://gitea:3000/nephio/nephio-{{ item.key }}.git
-          branch: main
-          auth: token
-          secretRef:
-            name: gitea-access-token
-    EOF
+- name: copy gitea root sync
+  template:
+    src: "{{ role_path }}/templates/{{outer_item}}.j2"
+    dest: "{{ tmp_directory }}/{{outer_item}}-{{item.key}}.yaml"
+    mode: 0644
+  loop:
+    - gitea-root-sync
+  loop_control:
+    loop_var: outer_item
+  when:
+    - gitea_username is defined
+
+- name: configure gitea root sync
+  shell: kubectl --kubeconfig ~/.kube/{{ item.key }}-config apply -f {{ tmp_directory }}/gitea-root-sync-{{item.key}}.yaml
   when:
     - gitea_username is defined

@@ -1,0 +1,16 @@
+apiVersion: configsync.gke.io/v1beta1
+kind: RootSync
+metadata: # kpt-merge: config-management-system/nephio-mgmt-cluster-sync
+  name: gitea-repo-{{ item.key }}-sync
+  namespace: config-management-system
+  annotations:
+    config.kubernetes.io/depends-on: apiextensions.k8s.io/CustomResourceDefinition/rootsyncs.configsync.gke.io
+    internal.kpt.dev/upstream-identifier: 'configsync.gke.io|RootSync|config-management-system|nephio-mgmt-cluster-sync'
+spec:
+  sourceFormat: unstructured
+  git:
+    repo: http://gitea:3000/nephio/nephio-{{ item.key }}.git
+    branch: main
+    auth: token
+    secretRef:
+      name: gitea-access-token
