@@ -23,8 +23,7 @@
     chdir: "{{ tmp_directory }}/{{ nephio.install_dir}}"
 
 - name: configure secret on {{ item.key }}
-  shell: |
-    kubectl --kubeconfig ~/.kube/{{ item.key }}-config create secret generic github-personal-access-token \
+  shell: kubectl --kubeconfig ~/.kube/{{ item.key }}-config create secret generic github-personal-access-token \
     --namespace="config-management-system" \
     --from-literal=username={{github_username}} \
     --from-literal=token={{github_token}}
@@ -59,8 +58,7 @@
     - gitea_username is defined
 
 - name: configure secret on {{ item.key }}
-  shell: |
-    kubectl --kubeconfig ~/.kube/{{ item.key }}-config create secret generic gitea-access-token \
+  shell: kubectl --kubeconfig ~/.kube/{{ item.key }}-config create secret generic gitea-access-token \
     --namespace="config-management-system" \
     --from-literal=username=nephio \
     --from-literal=token={{ gitea_token['content'] | b64decode }}
