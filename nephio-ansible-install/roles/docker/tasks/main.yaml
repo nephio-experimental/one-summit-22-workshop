@@ -23,6 +23,7 @@
 
 - name: Reset connection so docker group is picked up.
   meta: reset_connection
+
 - name: Create the docker network for kind (to make our job easier plumbing up the lot)
   docker_network:
     name: kind
