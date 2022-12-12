@@ -21,6 +21,9 @@
 - name: configure free-5gc-package
   shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/free-5gc-package.yaml
 
+- name: configure ipam
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/ipam.yaml
+
 - name: deploy edge cluster manifests
   include_tasks: manifest_files.yaml
   with_dict: "{{ clusters }}"
@@ -31,6 +34,3 @@
 
 - name: configure 5G topology
   shell:  kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/5gc-topology.yaml
-
-- name: configure ipam
-  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/ipam.yaml
