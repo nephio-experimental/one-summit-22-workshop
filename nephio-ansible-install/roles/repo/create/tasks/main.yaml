@@ -2,9 +2,15 @@
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
 ---
+- name: github url
+  set_fact:
+    github_url: "{{ 'https://api.github.com/orgs/{{ github_organization }}/repos' if github_organization is defined else 'https://api.github.com/user/repos' }}"
+  when:
+    - github_username is defined
+
 - name: create repo nephio-{{ item.key }}
   ansible.builtin.uri:
-    url: https://api.github.com/orgs/{{ github_organization }}/repos
+    url: "{{ github_url }}"
     headers:
       Accept: application/vnd.github+json
       Authorization: Bearer {{ github_token }}
@@ -15,23 +21,3 @@
     body_format: json
   register: result
   with_dict: "{{ clusters }}"
-  when:
-    - github_username is defined
-    - github_organization is defined
-- name: create repo nephio-{{ item.key }}
-  ansible.builtin.uri:
-    url: https://api.github.com/user/repos
-    headers:
-      Accept: application/vnd.github+json
-      Authorization: Bearer {{ github_token }}
-      X-GitHub-Api-Version: 2022-11-28
-    method: POST
-    body: {'auto_init': true, 'name': "nephio-{{ item.key }}"}
-    status_code: 201
-    body_format: json
-  register: result
-  with_dict: "{{ clusters }}"
-  when:
-    - github_username is defined
-    - github_organization is not defined
-## Add collaborators
