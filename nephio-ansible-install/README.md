@@ -2,7 +2,7 @@
 
 ## installation
 
-This repo provides the artifacts to install a Nephio environment using ansible to experiment with Nephio following [nephio ONE summit 2022 workshop](https://github.com/nephio-project/one-summit-22-workshop). The installation creates kind clusters, github repos and the manifests to get a base Nephio environment up an running.
+This repository provides the artifacts to install a Nephio environment using ansible to experiment with Nephio following [nephio ONE summit 2022 workshop](https://github.com/nephio-project/one-summit-22-workshop). The installation creates kind clusters, GitHub repositories and the manifests to get a base Nephio environment up an running.
 
 The installation assumes a VM is created with the following characteristics:
 
@@ -13,7 +13,7 @@ The installation assumes a VM is created with the following characteristics:
 The creation of the VM is right now out of scope, but we can see what we can do going forward.
 Also we assume right now the ansible playbook is executed remote from the VM. We can see if people want to use a different approach going forward.
 
-In a local environment clone the repo in a local environment
+In a local environment clone the repository in a local environment
 
 ```bash
 git clone https://github.com/nephio-project/one-summit-22-workshop.git
@@ -29,15 +29,15 @@ touch inventory/nephio.yaml
 
 Open an editor of your choice and paste the below in the inventory/nephio.yaml file.
 
---> You can choose between github repos (remote) or gitea repos (local) by setting the respective vars in the inventory/nephio.yaml file (see below).
+--> You can choose between github repositories (remote) or gitea repositorys (local) by setting the respective vars in the inventory/nephio.yaml file (see below).
 
 ```yaml
 all:
   vars:
     cloud_user: <username that is used to access the VM>
-    github_username: <github username>
-    github_token: <github personal access token>
-    github_organization: <optional, if a github organization is used this should be filled out with the github organization>
+    github_username: <GitHub username>
+    github_token: <GitHub personal access token>
+    github_organization: <optional, if a GitHub organization is used this should be filled out with the GitHub organization>
     gitea_username: <gitea username>
     gitea_password: <gitea password>
     proxy:
@@ -71,15 +71,15 @@ all:
 Some customizations are required to tailor the installation to your environment. Edit the inventory/nephio.yaml file where you update:
 
 - cloud_user: the username that is created to access the VM using SSH
-- github_username: your github user name
-- github_token: github access token to access github [github personal access token](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
-- github_organization: (optional) if you use a github organization for the repo's you should add your github organization here, otherwise it uses the github username
-- gitea_username: your [gitea](https://gitea.io) (local repo) username
-- gitea_password: your [gitea](https://gitea.io) (local repo) password
+- github_username: your GitHub username
+- github_token: GitHub access token to access GitHub [GitHub personal access token](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+- github_organization: (optional) if you use a GitHub organization for the repositories you should add your GitHub organization here, otherwise it uses the GitHub username
+- gitea_username: your [gitea](https://gitea.io) (local repository) username
+- gitea_password: your [gitea](https://gitea.io) (local repository) password
 
-Note: You can choose between using remote github repos or local gitea repos for your Nephio environment by setting either the github variables or the gitea variables.
+Note: You can choose between using remote GitHub repositories or local gitea repositories for your Nephio environment by setting either the GitHub variables or the gitea variables.
 
-To start running ansible playbooks an ansible environment is required. Below is an example how to install ansible using a virtual environment. The repo scripts rely on the ansible galaxy community collection
+To start running ansible playbooks an ansible environment is required. Below is an example how to install ansible using a virtual environment. The repository scripts rely on the ansible galaxy community collection
 
 ```python
 python3 -m venv .venv
@@ -100,19 +100,19 @@ First we create some prerequisites, which installs kubectl, kind, kpt, cni and s
 ansible-playbook playbooks/install-prereq.yaml
 ```
 
-Create the github repo(s) Nephio uses (optional: either choose to run this step for github or steps for gitea below)
+Create the GitHub repository(s) Nephio uses (optional: either choose to run this step for GitHub or steps for gitea below)
 
 ```bash
 ansible-playbook playbooks/create-repos.yaml
 ```
 
-Create the gitea instance Nephio uses (optional: either choose to run this step for gitea or step for github above)
+Create the gitea instance Nephio uses (optional: either choose to run this step for gitea or step for GitHub above)
 
 ```bash
 ansible-playbook playbooks/create-gitea.yaml
 ```
 
-Create the gitea repo(s) Nephio uses (optional: either choose to run this step for gitea or step for github above)
+Create the gitea repository(s) Nephio uses (optional: either choose to run this step for gitea or step for GitHub above)
 
 ```bash
 ansible-playbook playbooks/create-gitea-repos.yaml
@@ -141,7 +141,7 @@ ssh -L7007:localhost:7007 -L3000:localhost:3000 [YOUR_CLOUD_USER]@$IP
 kubectl --kubeconfig ~/.kube/mgmt-config port-forward --namespace=nephio-webui svc/nephio-webui 7007
 ```
 
-On your workstation you can now browse 
+On your workstation you can now browse
 * to the URL [http://localhost:7007](http://localhost:7007) for the nephio webui
 * to the URL [http://localhost:3000](http://localhost:3000) for the gitea webui (in case you chose to enable it by setting gitea username/password in inventory)
 

@@ -1,3 +1,4 @@
+---
 - hosts: localhost
   environment:
     http_proxy: "{{proxy.http_proxy}}"
