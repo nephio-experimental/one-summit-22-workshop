@@ -1,24 +1,26 @@
 # ONE Summit 2022 Nephio Workshop
 
 ## Table of Contents
-- [Welcome](#welcome)
-- [Accessing Your Environment](#accessing-your-environment)
-- [Custom Resources and Controllers](#custom-resources-and-controllers)
-- [Packages](#packages)
-  - [Package Ancestry](#package-ancestry)
-  - [Package Configuration Journey](#package-configuration-journey)
-- [Excercises](#excercises)
-  - [Create an Organizational Version of the free5gc Operator Package](#create-an-organizational-version-of-the-free5gc-operator-package)
-  - [Deploy the free5gc Operator](#deploy-the-free5gc-operator)
-  - [Deploy a `FiveGCoreTopology`](#deploy-a-fivegcoretopology)
-  - [The Shift Left Journey](#the-shift-left-journey)
-  - [Upgrading the Package](#upgrading-the-package)
-- [Troubleshooting and Utility Commands](#troubleshooting-and-utility-commands)
-  - [Restarting Controllers](#restarting-controllers)
-  - [Viewing Controller Logs](#viewing-controller-logs)
-  - [Restarting the Web UI](#restarting-the-web-ui)
-  - [Cleaning Up Everything](#cleaning-up-everything)
-- [Summary of Component Code](#summary-of-component-code)
+- [ONE Summit 2022 Nephio Workshop](#one-summit-2022-nephio-workshop)
+  - [Table of Contents](#table-of-contents)
+  - [Welcome](#welcome)
+  - [Accessing Your Environment](#accessing-your-environment)
+  - [Custom Resources and Controllers](#custom-resources-and-controllers)
+  - [Packages](#packages)
+    - [Package Ancestry](#package-ancestry)
+    - [Package Configuration Journey](#package-configuration-journey)
+  - [Excercises](#excercises)
+    - [Create an Organizational Version of the free5gc Operator Package](#create-an-organizational-version-of-the-free5gc-operator-package)
+    - [Deploy the free5gc Operator](#deploy-the-free5gc-operator)
+    - [Deploy a `FiveGCoreTopology`](#deploy-a-fivegcoretopology)
+    - [The Shift Left Journey](#the-shift-left-journey)
+    - [Upgrading the Package](#upgrading-the-package)
+  - [Troubleshooting and Utility Commands](#troubleshooting-and-utility-commands)
+    - [Restarting Controllers](#restarting-controllers)
+    - [Viewing Controller Logs](#viewing-controller-logs)
+    - [Restarting the Web UI](#restarting-the-web-ui)
+    - [Cleaning Up Everything](#cleaning-up-everything)
+  - [Summary of Component Code](#summary-of-component-code)
 
 ## Welcome
 Welcome! Each participant has been provisioned a VM with a complete
@@ -304,22 +306,22 @@ Blueprints**. This represents the private catalog of packages that have been
 customized for your organization.
 * In the resulting screen, push the **ADD ORGANIZATIONAL BLUEPRINT** button.
 * In the **Add Organizational Blueprint** screen:
-    * Choose "Create a new organizational blueprint by cloning an external
-      blueprint".
-    * Choose "free5gc-packages".
-    * Choose "free5gc-operator".
-    * Click Next
-    * Click Next in the Metadata section.
-    * Click Next in the Namespace section.
-    * Click Next in the Validate Resources section.
-    * Click the **CREATE ORGANIZATIONAL BLUEPRINT** button.
+  * Choose "Create a new organizational blueprint by cloning an external
+    blueprint".
+  * Choose "free5gc-packages".
+  * Choose "free5gc-operator".
+  * Click Next
+  * Click Next in the Metadata section.
+  * Click Next in the Namespace section.
+  * Click Next in the Validate Resources section.
+  * Click the **CREATE ORGANIZATIONAL BLUEPRINT** button.
 * The next screen is the package editor, for the new, *Draft* package you have
   just created. In order to make it available for deployment, we need to publish
   it.
-    * Click the **PROPOSE** button.
-    * It will change to **APPROVE** momentarily. Click that button.
-    * Note: there is an occasional issue where you will see an "Internal error".
-      This is a known bug. Just refresh the page and try again.
+  * Click the **PROPOSE** button.
+  * It will change to **APPROVE** momentarily. Click that button.
+  * Note: there is an occasional issue where you will see an "Internal error".
+    This is a known bug. Just refresh the page and try again.
 * You can click back on the *Package Management* link to go back to the
   **Dashboard**, where you will see your new package is available as an
   organizational blueprint.
