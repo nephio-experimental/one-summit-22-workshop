@@ -12,8 +12,6 @@
 - name: Download cni archive
   ansible.builtin.get_url:
     url: https://github.com/containernetworking/plugins/releases/download/v{{ cni_version }}/cni-plugins-{{ host_os }}-{{ host_arch }}-v{{ cni_version }}.tgz
-    #url: "https://kind.sigs.k8s.io/dl/v{{ kind_version }}/kind-{{ host_os }}-{{ host_arch }}"
-    #checksum: "{{ kubectl_checksum_binary }}"
     dest: "{{ tmp_directory }}"
     mode: 0600
   tags:
@@ -26,9 +24,3 @@
     remote_src: true
   tags:
     - cni
-
-#- name: Download cni binaries
-#  unarchive:
-#    src: https://github.com/containernetworking/plugins/releases/download/v0.8.6/cni-plugins-linux-amd64-v0.8.6.tgz
-#    dest: /opt/cni/bin/
-#    remote_src: true

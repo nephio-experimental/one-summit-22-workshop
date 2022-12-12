@@ -37,7 +37,7 @@ all:
     cloud_user: <username that is used to access the VM>
     github_username: <github username>
     github_token: <github personal access token>
-    github_organization: <github organization or username>
+    github_organization: <optional, if a github organization is used this should be filled out with the github organization>
     gitea_username: <gitea username>
     gitea_password: <gitea password>
     proxy:
