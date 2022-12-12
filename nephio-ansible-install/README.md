@@ -16,7 +16,7 @@ Also we assume right now the ansible playbook is executed remote from the VM. We
 In a local environment clone the repo in a local environment
 
 ```bash
-git clone https://github.com/henderiw-nephio/nephio-ansible-install
+git clone https://github.com/nephio-project/one-summit-22-workshop.git
 cd nephio-ansible-install
 ```
 
