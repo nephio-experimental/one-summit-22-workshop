@@ -11,3 +11,7 @@
 - name: deploy topo
   become: true
   shell: clab deploy -t {{ tmp_directory }}/topology.yaml
+  register: result
+  failed_when:
+    - result.rc > 1
+    - result.rc == 1 and "already exists" not in result.stderr
