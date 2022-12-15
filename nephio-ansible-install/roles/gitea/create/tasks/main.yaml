@@ -37,7 +37,7 @@
     - gitea_password is defined
 - name: Creating nephio user in gitea
   shell: |
-    docker exec -it gitea \
+    docker exec gitea \
       gitea admin user create \
         --username {{ gitea_username }} \
         --password {{ gitea_password }} \
