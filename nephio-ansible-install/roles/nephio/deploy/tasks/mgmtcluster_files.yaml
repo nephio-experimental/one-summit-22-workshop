@@ -34,7 +34,7 @@
 - name: configure secret
   shell: kubectl --kubeconfig ~/.kube/mgmt-config create secret generic github-personal-access-token \
     --from-literal=username={{github_username}} \
-    --from-literal=token={{github_token}} \
+    --from-literal=password={{github_token}} \
     --type=kubernetes.io/basic-auth
   failed_when:
     - result.rc > 1
