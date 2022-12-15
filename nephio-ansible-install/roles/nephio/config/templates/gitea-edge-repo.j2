@@ -1,7 +1,7 @@
 apiVersion: config.porch.kpt.dev/v1alpha1
 kind: Repository
 metadata:
-  name: gitea-{{ item.key }}
+  name: {{ item.key }}
   namespace: default
   labels:
     kpt.dev/repository-content: external-blueprints

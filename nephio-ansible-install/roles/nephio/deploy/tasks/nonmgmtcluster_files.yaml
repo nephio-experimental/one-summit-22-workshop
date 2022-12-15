@@ -60,7 +60,7 @@
 - name: configure secret on {{ item.key }}
   shell: kubectl --kubeconfig ~/.kube/{{ item.key }}-config create secret generic gitea-access-token \
     --namespace="config-management-system" \
-    --from-literal=username=nephio \
+    --from-literal=username={{ gitea_username }} \
     --from-literal=token={{ gitea_token['content'] | b64decode }}
   failed_when:
     - result.rc > 1
