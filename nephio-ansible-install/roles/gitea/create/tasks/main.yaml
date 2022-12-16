@@ -1,0 +1,60 @@
+## © 2022 Nephio Authors
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+---
+- name: Get UID
+  getent:
+    database: passwd
+  when:
+    - gitea_username is defined
+    - gitea_password is defined
+- name: Create a gitea directory
+  ansible.builtin.file:
+    path: /home/{{ cloud_user}}/gitea
+    state: directory
+    mode: '0755'
+- name: Start gitea container
+  docker_container:
+    name: gitea
+    image: gitea/gitea:1.17.3-rootless
+    networks:
+      - name: kind
+    user: "{{ getent_passwd[cloud_user].1 }}:{{ getent_passwd[cloud_user].2 }}"
+    restart: yes
+    ports:
+      - "127.0.0.1:3000:3000/tcp"
+      - "127.0.0.1:2222:2222/tcp"
+    env:
+        GITEA_APP_INI: "/var/lib/gitea/custom/conf/app.ini"
+        INSTALL_LOCK: "true"
+    volumes:
+      - /home/{{ cloud_user }}/gitea:/var/lib/gitea:rw
+  when:
+    - gitea_username is defined
+    - gitea_password is defined
+- name: Wait for gitea to initialise
+  ansible.builtin.wait_for:
+    path: /home/{{ cloud_user }}/gitea/ssh
+  when:
+    - gitea_username is defined
+    - gitea_password is defined
+- name: Creating nephio user in gitea
+  shell: |
+    docker exec gitea \
+      gitea admin user create \
+        --username {{ gitea_username }} \
+        --password {{ gitea_password }} \
+        --must-change-password=false \
+        --access-token \
+        --email=nephio@nephio.org > /home/{{ cloud_user }}/gitea/nephio-create
+  when:
+    - gitea_username is defined
+    - gitea_password is defined
+- name: Creating nephio user in gitea
+  shell: |
+    grep 'Access token was successfully created... ' /home/{{ cloud_user }}/gitea/nephio-create | \
+    sed 's/Access token was successfully created... //' | \
+    tr -d '\r\n' > /home/{{ cloud_user }}/gitea/nephio-gitea-token
+  when:
+    - gitea_username is defined
+    - gitea_password is defined

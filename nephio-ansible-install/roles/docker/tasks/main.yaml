@@ -1,0 +1,30 @@
+## © 2022 Nephio Authors
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+
+---
+- name: ensure repository key is installed
+  become: true
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: ensure docker registry is available
+  become: true
+  apt_repository: repo='deb https://download.docker.com/linux/ubuntu bionic stable' state=present
+
+- name: ensure docker and dependencies are installed
+  become: true
+  apt: name=docker-ce update_cache=yes
+
+- name: Add user to docker group
+  become: true
+  shell: usermod -aG docker {{ cloud_user }}
+
+- name: Reset connection so docker group is picked up.
+  meta: reset_connection
+
+- name: Create the docker network for kind (to make our job easier plumbing up the lot)
+  docker_network:
+    name: kind
+    driver: bridge

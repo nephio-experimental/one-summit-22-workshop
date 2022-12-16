@@ -1,0 +1,62 @@
+## © 2022 Nephio Authors
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+
+
+---
+- name: deploy nephio-system on mgmt cluster
+  shell: kpt --kubeconfig ~/.kube/mgmt-config live init nephio-system
+  args: 
+    chdir: "{{ tmp_directory }}/{{ nephio.install_dir}}"
+  register: result
+  failed_when:
+    - result.rc > 1
+    - result.rc == 1 and "already" not in result.stderr
+
+- name: deploy nephio-system on mgmt cluster
+  shell: kpt --kubeconfig ~/.kube/mgmt-config live apply nephio-system --reconcile-timeout=15m --output=table
+  args: 
+    chdir: "{{ tmp_directory }}/{{ nephio.install_dir}}"
+
+- name: deploy nephio-webui on mgmt cluster
+  shell: kpt --kubeconfig ~/.kube/mgmt-config live init nephio-webui
+  args: 
+    chdir: "{{ tmp_directory }}/{{ nephio.install_dir}}"
+  register: result
+  failed_when:
+    - result.rc > 1
+    - result.rc == 1 and "already exists" not in result.stderr
+
+- name: deploy nephio-webui  on mgmt cluster
+  shell: kpt --kubeconfig ~/.kube/mgmt-config live apply nephio-webui
+  args: 
+    chdir: "{{ tmp_directory }}/{{ nephio.install_dir}}"
+
+- name: configure secret
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config create secret generic github-personal-access-token \
+    --from-literal=username={{github_username}} \
+    --from-literal=password={{github_token}} \
+    --type=kubernetes.io/basic-auth
+  failed_when:
+    - result.rc > 1
+    - result.rc == 1 and "already exists" not in result.stderr
+  when:
+    - github_username is defined
+
+- name: Slurp gitea access token
+  ansible.builtin.slurp:
+    src: /home/{{ cloud_user }}/gitea/nephio-gitea-token
+  register: gitea_token
+  when:
+    - gitea_username is defined
+
+- name: configure secret on mgmt cluster
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config create secret generic gitea-access-token \
+    --from-literal=username={{ gitea_username}} \
+    --from-literal=password={{ gitea_token['content'] | b64decode }} \
+    --type=kubernetes.io/basic-auth
+  failed_when:
+    - result.rc > 1
+    - result.rc == 1 and "already exists" not in result.stderr
+  when:
+    - gitea_username is defined

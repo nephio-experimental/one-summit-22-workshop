@@ -1,0 +1,17 @@
+apiVersion: config.porch.kpt.dev/v1alpha1
+kind: Repository
+metadata:
+  name: {{ item.key }}
+  namespace: default
+  labels:
+    kpt.dev/repository-content: external-blueprints
+spec:
+  content: Package
+  deployment: true
+  git:
+    branch: main
+    directory: /
+    repo: {{github_repo}}
+    secretRef:
+      name: github-personal-access-token
+  type: git

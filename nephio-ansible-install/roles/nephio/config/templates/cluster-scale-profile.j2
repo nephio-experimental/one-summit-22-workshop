@@ -1,0 +1,8 @@
+apiVersion: infra.nephio.org/v1alpha1
+kind: ClusterScaleProfile
+metadata:
+  name: {{ item.key }}
+spec:
+  autoscaling: false
+  nodeMax: 6
+  siteDensity: low

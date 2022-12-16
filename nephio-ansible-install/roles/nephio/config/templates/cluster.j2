@@ -1,0 +1,10 @@
+apiVersion: infra.nephio.org/v1alpha1
+kind: Cluster
+metadata:
+  name: {{ item.key }}
+  labels:
+    nephio.org/region: us-central1
+    nephio.org/site-type: edge
+    nephio.org/site: {{ item.key }}
+repositoryRef:
+  name: {{ item.key }}

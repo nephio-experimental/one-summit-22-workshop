@@ -1,0 +1,17 @@
+## © 2022 Nephio Authors
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Create tmp nephio-install-mgmt directory
+  ansible.builtin.file:
+    path: "{{ tmp_directory }}/{{ nephio.install_dir}}"
+    state: directory
+    mode: '0755'
+
+- name: install packages
+  include_tasks: packages_files.yaml
+  with_items: 
+    - {package: nephio-system}
+    - {package: nephio-configsync}
+    - {package: nephio-webui}

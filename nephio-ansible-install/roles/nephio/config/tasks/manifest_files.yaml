@@ -1,0 +1,57 @@
+## © 2022 Nephio Authors
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+
+---
+- name: github repo
+  set_fact:
+    github_repo: "{{ 'https://github.com/{{ github_organization}}/nephio-{{ item.key }}.git' if github_organization is defined else 'https://github.com/{{ github_username}}/nephio-{{ item.key }}.git' }}"
+  when:
+    - github_username is defined
+
+- name: copy edge github repo
+  template:
+    src: "{{ role_path }}/templates/github-edge-repo.j2"
+    dest: "{{ tmp_directory }}/github-edge-repo-{{item.key}}.yaml"
+    mode: 0644
+  when:
+    - github_username is defined
+
+- name: configure edge github repo
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/github-edge-repo-{{item.key}}.yaml
+  when:
+    - github_username is defined
+
+- name: copy edge gitea repo
+  template:
+    src: "{{ role_path }}/templates/gitea-edge-repo.j2"
+    dest: "{{ tmp_directory }}/gitea-edge-repo-{{item.key}}.yaml"
+    mode: 0644
+  when:
+    - gitea_username is defined
+
+- name: configure edge gitea repo
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/gitea-edge_repo-{{item.key}}.yaml
+  when:
+    - gitea_username is defined
+
+- name: copy cluster manifests
+  template:
+    src: "{{ role_path }}/templates/{{outer_item}}.j2"
+    dest: "{{ tmp_directory }}/{{outer_item}}-{{item.key}}.yaml"
+    mode: 0644
+  loop:
+    - cluster
+    - cluster-context
+    - cluster-scale-profile
+  loop_control:
+    loop_var: outer_item
+
+- name: configure cluster manifests
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/{{outer_item}}-{{item.key}}.yaml
+  loop:
+    - cluster
+    - cluster-context
+    - cluster-scale-profile
+  loop_control:
+    loop_var: outer_item

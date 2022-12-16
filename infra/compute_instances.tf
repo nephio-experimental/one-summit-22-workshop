@@ -67,8 +67,8 @@ resource "null_resource" "config_vm" {
   provisioner "local-exec" {
     command = "ansible-playbook -i '../ansible_kind/hosts' --private-key ${local.ssh_private_key_path} ../ansible_kind/kind_setup.yaml"
   }
-  lifecycle {
-    replace_triggered_by = [local_file.ansible_inventory]
-  }
+  //lifecycle {
+  //  replace_triggered_by = [local_file.ansible_inventory]
+  //}
   depends_on = [local_file.ansible_inventory]
 }

@@ -1,0 +1,36 @@
+## © 2022 Nephio Authors
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+
+---
+- name: copy nephio k8s yaml
+  template:
+    src: "{{ role_path }}/templates/{{item}}.j2"
+    dest: "{{ tmp_directory }}/{{item}}.yaml"
+    mode: 0644
+  with_items:
+    - nephio-package
+    - free-5gc-package
+    - 5gc-topology
+    - upf-class
+    - ipam
+
+- name: configure nephio-package
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/nephio-package.yaml
+
+- name: configure free-5gc-package
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/free-5gc-package.yaml
+
+- name: configure ipam
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/ipam.yaml
+
+- name: deploy edge cluster manifests
+  include_tasks: manifest_files.yaml
+  with_dict: "{{ clusters }}"
+  when: item.key != "mgmt"
+
+- name: configure upfclass
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/upf-class.yaml
+
+- name: configure 5G topology
+  shell:  kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/5gc-topology.yaml
