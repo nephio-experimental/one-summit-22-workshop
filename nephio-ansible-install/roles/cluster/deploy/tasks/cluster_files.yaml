@@ -1,4 +1,4 @@
-## © 2022 Nokia
+## © 2022 Nephio Authors
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
 ---
@@ -13,23 +13,9 @@
 
 - name: Deploy cluster {{ item.key }} 
   shell: "kind create cluster --name {{ item.key }} --kubeconfig ~/.kube/{{ item.key }}-config --config /tmp/{{ item.key }}-cluster-config.yaml"
-  #ignore_errors: true
   register: result
   failed_when:
     - result.rc > 1
     - result.rc == 1 and "already exists" not in result.stderr
-
-#- name: Deploy multus {{ item.key }} 
-#  shell: 'kubectl --kubeconfig ~/.kube/{{ item.key }}-config apply --filename="https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/v{{ multus_cni_version }}/deployments/multus-daemonset-thick-plugin.yml"'
-#  #ignore_errors: true
-#  register: result
-#  failed_when:
-#    - result.rc > 1
-#    - result.rc == 1 and "already exists" not in result.stderr
-
-
-#- name: debug
-#  debug:
-#    msg: "{{ result }}"
 
 

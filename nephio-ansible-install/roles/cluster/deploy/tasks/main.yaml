@@ -1,4 +1,4 @@
-## © 2022 Nokia
+## © 2022 Nephio Authors
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
 ---
@@ -21,4 +21,3 @@
 - name: deploy clusters
   include_tasks: cluster_files.yaml
   with_dict: "{{ clusters }}"
-  #ignore_errors: true
