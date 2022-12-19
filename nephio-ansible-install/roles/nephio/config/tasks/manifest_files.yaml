@@ -31,7 +31,7 @@
     - gitea_username is defined
 
 - name: configure edge gitea repo
-  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/gitea-edge_repo-{{item.key}}.yaml
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/gitea-edge-repo-{{item.key}}.yaml
   when:
     - gitea_username is defined
 
