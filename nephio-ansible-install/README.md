@@ -8,6 +8,7 @@ The installation assumes a VM is created with the following characteristics:
 
 - ubuntu 22.04LTS -> this is tested right now
 - 32G RAM, 8 vcpu -> we can change this based on the amount of kind clusters we need
+- 50GB disk (default 10GB disk on GCE is too small, 50GB is tested)
 - SSH access with a SSH key is setup + username
 
 The creation of the VM is right now out of scope, but we can see what we can do going forward.
