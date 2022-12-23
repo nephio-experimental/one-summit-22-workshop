@@ -1,0 +1,36 @@
+## © 2022 Nephio Authors
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+
+---
+- name: github repo
+  set_fact:
+    github_repo: "{{ 'https://github.com/{{ github_organization}}/nephio-catalog.git' if github_organization is defined else 'https://github.com/{{ github_username}}/nephio-catalog.git' }}"
+  when:
+    - github_username is defined
+
+- name: copy mgmt github repo
+  template:
+    src: "{{ role_path }}/templates/github-mgmt-repo.j2"
+    dest: "{{ tmp_directory }}/github-mgmt-repo-catalog.yaml"
+    mode: 0644
+  when:
+    - github_username is defined
+
+- name: configure mgmt github repo
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/github-mgmt-repo-catalog.yaml
+  when:
+    - github_username is defined
+
+- name: copy edge gitea repo
+  template:
+    src: "{{ role_path }}/templates/gitea-mgmt-repo.j2"
+    dest: "{{ tmp_directory }}/gitea-mgmt-repo-catalog.yaml"
+    mode: 0644
+  when:
+    - gitea_username is defined
+
+- name: configure edge gitea repo
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/gitea-mgmt-repo-catalog.yaml
+  when:
+    - gitea_username is defined

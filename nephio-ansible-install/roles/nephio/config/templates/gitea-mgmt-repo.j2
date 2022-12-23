@@ -1,0 +1,18 @@
+apiVersion: config.porch.kpt.dev/v1alpha1
+kind: Repository
+metadata:
+  name: catalog
+  namespace: default
+  labels:
+    kpt.dev/repository-content: organizational-blueprints
+spec:
+  content: Package
+  deployment: false
+  git:
+    branch: main
+    createBranch: true
+    directory: /
+    repo: http://gitea:3000/nephio/nephio-catalog.git
+    secretRef:
+      name: gitea-access-token
+  type: git

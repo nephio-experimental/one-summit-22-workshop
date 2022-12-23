@@ -24,6 +24,9 @@
 - name: configure ipam
   shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/ipam.yaml
 
+- name: deploy mgmt cluster manifests
+  include_tasks: manifest_mgmt_files.yaml
+
 - name: deploy edge cluster manifests
   include_tasks: manifest_files.yaml
   with_dict: "{{ clusters }}"
