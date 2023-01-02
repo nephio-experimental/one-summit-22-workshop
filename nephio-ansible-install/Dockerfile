@@ -1,9 +1,9 @@
-FROM us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest
+FROM us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss@sha256:eae70293915c10aae4909c407eaa0a59a813bbab9a21667fdbf0e72502b28c3e
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt update && \
-    apt install -y python3 python3-docker && \
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y python3=3.9.2-3 python3-docker=4.1.0-1.2 && \
     rm -rf /var/lib/apt/lists/*
 
 RUN wget -q https://open-vsx.org/api/redhat/vscode-yaml/1.10.1/file/redhat.vscode-yaml-1.10.1.vsix && \

@@ -74,23 +74,12 @@
       --selector=app.kubernetes.io/component=controller \
       --timeout=180s
 
+- name: copy github root sync
+  template:
+    src: "{{ role_path }}/templates/nephio-ingress.j2"
+    dest: "{{ tmp_directory }}/nephio-ingress.yaml"
+    mode: 0644
+
 - name: configure nephio ingress
   shell: |
-    cat <<EOF | kubectl --kubeconfig ~/.kube/mgmt-config apply -f -
-      apiVersion: networking.k8s.io/v1
-      kind: Ingress
-      metadata:
-        name: nephio-ingress
-        namespace: nephio-webui
-      spec:
-        rules:
-        - http:
-            paths:
-            - pathType: Prefix
-              path: "/"
-              backend:
-                service:
-                  name: nephio-webui
-                  port:
-                    number: 7007
-    EOF
+    kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{tmp_directory}}/nephio-ingress.yaml

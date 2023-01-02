@@ -5,8 +5,7 @@
     https_proxy: "{{proxy.https_proxy}}"
     no_proxy: "{{proxy.no_proxy}}"
   roles:
-    - { role: cluster/deploy, tags: cluster_deploy }
-    - { role: topo/deploy, tags: topo_deploy }
-    - { role: multus, tags: multus }
-    - { role: nephio/deploy, tags: nephio }
-    
+    - {role: cluster/deploy, tags: cluster_deploy}
+    - {role: topo/deploy, tags: topo_deploy}
+    - {role: multus, tags: multus}
+    - {role: nephio/deploy, tags: nephio}

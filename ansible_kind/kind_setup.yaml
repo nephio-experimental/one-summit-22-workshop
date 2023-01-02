@@ -6,25 +6,25 @@
   tasks:
    - name:
      ansible.builtin.wait_for_connection:
-   - name: check if file exists that indicates if clusters are already provisioned
+   - name: check if file exists that indicates if clusters are provisioned
      stat:
-       path: /home/ubuntu/.done
+      path: /home/ubuntu/.done
      register: touch_file_exists
    - name: Copy multuclusterkind directory
      copy:
-       src: "{{ item }}"
-       dest: /home/ubuntu/
-       owner: ubuntu
-       group: ubuntu
-       mode: 0644
+      src: "{{ item }}"
+      dest: /home/ubuntu/
+      owner: ubuntu
+      group: ubuntu
+      mode: 0644
      loop:
-       - ./scripts/multiclusterkind
-       - /home/workshop/nephio-test-github-pat.txt
+      - ./scripts/multiclusterkind
+      - /home/workshop/nephio-test-github-pat.txt
      when: not touch_file_exists.stat.exists
    - name: Post-provision VM process
      command: "bash /home/ubuntu/multiclusterkind/{{ item }}"
      loop:
-       - k8s_cluster_setup.sh
-       - kind_create_clusters.sh 4
-       - configure.sh
+      - k8s_cluster_setup.sh
+      - kind_create_clusters.sh 4
+      - configure.sh
      when: not touch_file_exists.stat.exists

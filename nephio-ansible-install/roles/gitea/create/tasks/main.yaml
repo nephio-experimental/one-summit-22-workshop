@@ -27,8 +27,8 @@
       - "3000:3000"
       - "2222:2222"
     env:
-        GITEA_APP_INI: "/var/lib/gitea/custom/conf/app.ini"
-        INSTALL_LOCK: "true"
+      GITEA_APP_INI: "/var/lib/gitea/custom/conf/app.ini"
+      INSTALL_LOCK: "true"
     volumes:
       - /home/{{ cloud_user }}/gitea:/var/lib/gitea:rw
   when:

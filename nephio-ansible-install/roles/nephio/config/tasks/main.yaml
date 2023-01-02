@@ -33,4 +33,4 @@
   shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/upf-class.yaml
 
 - name: configure 5G topology
-  shell:  kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/5gc-topology.yaml
+  shell: kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{ tmp_directory }}/5gc-topology.yaml

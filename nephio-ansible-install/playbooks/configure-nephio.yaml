@@ -5,5 +5,4 @@
     https_proxy: "{{proxy.https_proxy}}"
     no_proxy: "{{proxy.no_proxy}}"
   roles:
-    - { role: nephio/config, tags: nephio }
-    
+    - {role: nephio/config, tags: nephio}

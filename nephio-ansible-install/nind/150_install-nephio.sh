@@ -1,6 +1,8 @@
 #!/bin/bash
+# shellcheck disable=SC1091
 export USER=user
-export BASE=$(pwd)
+BASE=$(pwd)
+export BASE
 export LC_ALL=C.UTF-8
 echo "Activating extensions..."
 /opt/code-oss/bin/codeoss-cloudworkstations --install-extension redhat.vscode-yaml
@@ -8,7 +10,7 @@ echo "Activating extensions..."
 echo "-----------------"
 echo "-----------------"
 echo "Change to install directory"
-cd /nephio-installation
+cd /nephio-installation || exit
 echo "-----------------"
 echo "Setting up python"
 python3 -m venv .venv
@@ -50,6 +52,6 @@ done
 kubectl config view --flatten > /home/user/.kube/config
 chown -R user:user /home/user/.kube
 echo "-----------------"
-cd $BASE
+cd "$BASE" || exit
 echo "nephio-in-docker installation done"
 echo "-----------------"

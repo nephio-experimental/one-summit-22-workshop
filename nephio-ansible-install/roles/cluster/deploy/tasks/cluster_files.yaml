@@ -2,7 +2,6 @@
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
 ---
-
 - name: Copy cluster config template
   template:
     src: "{{ role_path }}/templates/cluster-config.yaml.j2"
@@ -33,5 +32,3 @@
   failed_when:
     - result.rc > 1
     - result.rc == 1 and "already exists" not in result.stderr
-
-

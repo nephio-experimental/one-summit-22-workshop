@@ -1,7 +1,7 @@
 ## © 2022 Nephio Authors
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
-
+---
 - name: Slurp access token
   ansible.builtin.slurp:
     src: /home/{{ cloud_user }}/gitea/nephio-gitea-token
