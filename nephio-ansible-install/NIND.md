@@ -11,7 +11,8 @@ To build and run nephio-in-docker execute the commands listed below:
 git clone https://github.com/nephio-project/one-summit-22-workshop.git
 cd one-summit-22-workshop/nephio-ansible-install
 docker build -t nind .
-docker run --name=nind --rm --env='DOCKER_OPTS=' --volume=/var/lib/docker --privileged --cgroup-parent=nephio.slice --restart=no -d -p 8080:80 -p 7007:7007 -p 3000:3000 nind
+docker run --name=nind --rm --env='DOCKER_OPTS=' --volume=/var/lib/docker --privileged \
+  --cgroup-parent=nephio.slice --restart=no -d -p 8080:80 -p 7007:7007 -p 3000:3000 nind
 ```
 Note that it will take about 10 mins to install nephio after starting up the container.
 You can follow the nephio installation progress by connecting to the nind container and access the installation log files.
@@ -34,18 +35,21 @@ localhost                  : ok=22   changed=18   unreachable=0    failed=0    s
 ```
 
 You can build and run nind on any laptop or workstaton that packs-a-punch to let nephio fly.
-Refer to the VM specs outlined in the main [README.md](/README.md#installation) of this repo.
+Refer to the VM specs outlined in the nephio-ansible-install [README.md](/nephio-ansible-install/README.md#installation) of this repo.
 
 In case you do not have a suitable laptop or workstation available you can also build and run the nind container on Google's [Cloud Workstations](https://cloud.google.com/workstations/docs/overview). The [online documentation](https://cloud.google.com/workstations/docs/customize-container-images#building_a_custom_container_image) outlines the instructions to do so.
 
 ## nephio webui
 Now that the nephio environment is up an running you can connect to the nephio webui by pointing your browser to [http://localhost:7007](http://localhost:7007)
-![nephio webui](/diagrams/nephio-webui.png "nephio webui")
+
+![nephio webui](/nephio-ansible-install/diagrams/nephio-webui.png "nephio webui")
 
 ## gitea repos
 To access the gitea repos you can connect to [http://localhost:3000](http://localhost:3000) using nephio/nephio as the access credentials.
-![gitea-repos](/diagrams/gitea-repos.png "gitea repos")
+
+![gitea-repos](/nephio-ansible-install/diagrams/gitea-repos.png "gitea repos")
 
 ## workstation
 The workstation can be accessed by connecting your browser to [http://localhost:8080](http://localhost:8080)
-![workstation](/diagrams/workstation.png "workstation")
+
+![workstation](/nephio-ansible-install/diagrams/workstation.png "workstation")
