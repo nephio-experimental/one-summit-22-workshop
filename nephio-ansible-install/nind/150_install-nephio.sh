@@ -2,9 +2,13 @@
 export USER=user
 export BASE=$(pwd)
 export LC_ALL=C.UTF-8
+echo "Activating extensions..."
+/opt/code-oss/bin/codeoss-cloudworkstations --install-extension redhat.vscode-yaml
+/opt/code-oss/bin/codeoss-cloudworkstations --install-extension ms-kubernetes-tools.vscode-kubernetes-tools
+echo "-----------------"
 echo "-----------------"
 echo "Change to install directory"
-cd /nephio-ansible-install
+cd /nephio-installation
 echo "-----------------"
 echo "Setting up python"
 python3 -m venv .venv
@@ -33,6 +37,19 @@ echo "-----------------"
 echo "Configuring nephio..."
 ansible-playbook --connection=local playbooks/configure-nephio.yaml > 04_nephio.out 2>&1
 echo "-----------------"
-echo "nephio demo installation done"
+echo "Setting kubeconfig..."
+mkdir /home/user/.kube
+for file in /root/.kube/*-config
+do
+  if [ -n "$KUBECONFIG" ]; then
+    export KUBECONFIG=$KUBECONFIG:${file}
+  else
+    export KUBECONFIG=${file}
+  fi
+done
+kubectl config view --flatten > /home/user/.kube/config
+chown -R user:user /home/user/.kube
+echo "-----------------"
 cd $BASE
+echo "nephio-in-docker installation done"
 echo "-----------------"
