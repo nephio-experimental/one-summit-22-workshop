@@ -18,7 +18,7 @@ In a local environment clone the repository in a local environment
 
 ```bash
 git clone https://github.com/nephio-project/one-summit-22-workshop.git
-cd nephio-ansible-install
+cd one-summit-22-workshop/nephio-ansible-install
 ```
 
 The installation requires an inventory file that is tailored to your enviornment. The ansible.config assumes the inventory file is located in inventory/nephio.yaml within the cloned environment. Create an inventory directory and the nephio.yaml file within the inventory directory
@@ -132,15 +132,13 @@ Lastly we install the environment manifests we use for the workshop scenario's
 ansible-playbook playbooks/configure-nephio.yaml
 ```
 
-## Accessing Your Environment
+## accessing your environment
 
 ```bash
 # login from your workstation
 #   nephio webui: forwarding 7007 -> localhost:7007 on the remote VM.
 #   gitea webui: forwarding 3000 -> localhost:3000 on the remote VM.
 ssh -L7007:localhost:7007 -L3000:localhost:3000 [YOUR_CLOUD_USER]@$IP
-# now you are in the remote VM, in there run
-kubectl --kubeconfig ~/.kube/mgmt-config port-forward --namespace=nephio-webui svc/nephio-webui 7007
 ```
 
 On your workstation you can now browse
