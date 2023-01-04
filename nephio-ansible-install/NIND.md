@@ -14,7 +14,7 @@ docker build -t nind .
 docker run --name=nind --rm --env='DOCKER_OPTS=' --volume=/var/lib/docker --privileged \
   --cgroup-parent=nephio.slice --restart=no -d -p 8080:80 -p 7007:7007 -p 3000:3000 nind
 ```
-Note that it will take about 10 mins to install nephio after starting up the container.
+Note that it will take about 10 mins for nephio to set up after starting the container as it executes the commands in the [installation script](/nephio-ansible-install/nind/150_install-nephio.sh).
 You can follow the nephio installation progress by connecting to the nind container and access the installation log files.
 
 ```bash
@@ -24,7 +24,7 @@ docker exec -it nind bash
 # change to the nephio installation directory
 cd /nephio-installation
 
-# you will see 5 log files coming up logging the progress of the installation steps..
+# you will see 5 log files coming up logging the progress of the installation steps.
 # 00_prereq.out, 01_gitea.out, 02_repos.out, 03_clusters.out and 04_nephio.out
 # when the last step starts executing follow the progress by tailing its log file.
 tail -f 04_nephio.out
@@ -34,8 +34,8 @@ PLAY RECAP *********************************************************************
 localhost                  : ok=22   changed=18   unreachable=0    failed=0    skipped=9    rescued=0    ignored=0
 ```
 
-You can build and run nind on any laptop or workstaton that packs-a-punch to let nephio fly.
-Refer to the VM specs outlined in the nephio-ansible-install [README.md](/nephio-ansible-install/README.md#installation) of this repo.
+You can build and run nind on any laptop or workstaton that packs-the-punch to let nephio fly.
+Refer to the VM specs outlined in the nephio-ansible-install [README.md](/nephio-ansible-install/README.md#installation) of this repository.
 
 In case you do not have a suitable laptop or workstation available you can also build and run the nind container on Google's [Cloud Workstations](https://cloud.google.com/workstations/docs/overview). The [online documentation](https://cloud.google.com/workstations/docs/customize-container-images#building_a_custom_container_image) outlines the instructions to do so.
 
