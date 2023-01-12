@@ -1,25 +1,24 @@
-## © 2022 Nephio Authors
+## © 2023 Nephio Authors
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: ensure repository key is installed
-  become: true
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
-    state: present
+- name: check if docker already installed
+  ansible.builtin.shell: service docker status
+  register: docker_status
 
-- name: ensure docker registry is available
-  become: true
-  apt_repository: repo='deb https://download.docker.com/linux/ubuntu bionic stable' state=present
-
-- name: ensure docker and dependencies are installed
-  become: true
-  apt: name=docker-ce update_cache=yes
+- include_tasks: "docker-{{ ansible_os_family }}.yaml"
+  args:
+    apply:
+      become: true
+  when: docker_status.rc != 0
 
 - name: Add user to docker group
+  ansible.builtin.user:
+    name: "{{ cloud_user }}"
+    group: docker
   become: true
-  shell: usermod -aG docker {{ cloud_user }}
+  when: docker_status.rc != 0
 
 - name: Reset connection so docker group is picked up.
   meta: reset_connection
