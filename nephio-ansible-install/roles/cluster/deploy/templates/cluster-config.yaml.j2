@@ -7,5 +7,5 @@ networking:
 nodes:
   - role: control-plane
     extraMounts:
-      - hostPath: /tmp/cni
+      - hostPath: "{{ tmp_directory }}/cni"
         containerPath: /opt/cni/bin
