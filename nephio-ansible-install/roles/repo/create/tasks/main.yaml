@@ -1,11 +1,10 @@
 ## © 2022 Nephio Authors
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
-
 ---
 - name: github url
   set_fact:
-    github_url: "{{ 'https://api.github.com/orgs/{{ github_organization }}/repos' if github_organization is defined else 'https://api.github.com/user/repos' }}"
+    github_url: "{{ 'https://api.github.com/orgs/{{ github_organization }}/repos' if (github_organization is defined and github_organization != '') else 'https://api.github.com/user/repos' }}"
   when:
     - github_username is defined
 
@@ -22,3 +21,22 @@
     body_format: json
   register: result
   with_dict: "{{ clusters }}"
+  when:
+    - item.key != "mgmt"
+  ignore_errors: true
+
+- name: create repo nephio-catalog
+  ansible.builtin.uri:
+    url: "{{ github_url }}"
+    headers:
+      Accept: application/vnd.github+json
+      Authorization: Bearer {{ github_token }}
+      X-GitHub-Api-Version: 2022-11-28
+    method: POST
+    body: {'auto_init': true, 'name': "nephio-catalog"}
+    status_code: 201
+    body_format: json
+  register: result
+  with_dict: "{{ clusters }}"
+  when: item.key == "mgmt"
+  ignore_errors: true

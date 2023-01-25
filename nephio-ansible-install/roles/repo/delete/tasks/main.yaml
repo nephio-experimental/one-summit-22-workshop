@@ -3,9 +3,15 @@
 ## SPDX-License-Identifier: Apache-2.0
 
 ---
+- name: github url
+  set_fact:
+    github_url: "{{ 'https://api.github.com/repos/{{ github_organization }}' if (github_organization is defined and github_organization != '') else 'https://api.github.com/repos/{{ github_username }}' }}"
+  when:
+    - github_username is defined
+
 - name: delete repo nephio-{{ item.key }}
   ansible.builtin.uri:
-    url: https://api.github.com/repos/{{ github_organization }}/nephio-{{ item.key }}
+    url: "{{ github_url}}/nephio-{{ item.key }}"
     headers:
       Accept: application/vnd.github+json
       Authorization: Bearer {{ github_token }}
@@ -16,11 +22,11 @@
   register: result
   with_dict: "{{ clusters }}"
   when:
-    - github_username is defined
-    - github_organization is defined
-- name: delete repo nephio-{{ item.key }}
+    - item.key != "mgmt"
+
+- name: delete repo nephio-catalog
   ansible.builtin.uri:
-    url: https://api.github.com/repos/{{ github_username }}/nephio-{{ item.key }}
+    url: "{{ github_url}}/nephio-catalog"
     headers:
       Accept: application/vnd.github+json
       Authorization: Bearer {{ github_token }}
@@ -31,5 +37,4 @@
   register: result
   with_dict: "{{ clusters }}"
   when:
-    - github_username is defined
-    - github_organization is not defined
+    - item.key == "mgmt"

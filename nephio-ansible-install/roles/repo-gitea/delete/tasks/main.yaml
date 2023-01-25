@@ -2,12 +2,14 @@
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
 
+---
 - name: Slurp access token
   ansible.builtin.slurp:
     src: /home/{{ cloud_user }}/gitea/nephio-gitea-token
   register: gitea_token
   when:
     - gitea_username is defined
+
 - name: Delete repos
   ansible.builtin.uri:
     url: http://localhost:3000/api/v1/repos/nephio/nephio-{{ item.key }}
@@ -21,6 +23,23 @@
   with_dict: "{{ clusters }}"
   when:
     - gitea_username is defined
+    - item.key != "mgmt"
+
+- name: Delete repos
+  ansible.builtin.uri:
+    url: http://localhost:3000/api/v1/repos/nephio/nephio-catalog
+    headers:
+      Authorization: token {{ gitea_token['content'] | b64decode }}
+      accept: application/json
+    method: DELETE
+    status_code: 204
+    body_format: json
+  register: result
+  with_dict: "{{ clusters }}"
+  when:
+    - gitea_username is defined
+    - item.key == "mgmt"
+
 - name: Print return information from the previous task
   ansible.builtin.debug:
     var: result
