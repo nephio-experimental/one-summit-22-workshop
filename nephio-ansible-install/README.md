@@ -41,6 +41,8 @@ all:
     github_organization: <optional, if a GitHub organization is used this should be filled out with the GitHub organization>
     gitea_username: <gitea username>
     gitea_password: <gitea password>
+    dockerhub_username: <dockerhub username>
+    dockerhub_token: <dockerhub token or password>
     proxy:
       http_proxy: 
       https_proxy:
