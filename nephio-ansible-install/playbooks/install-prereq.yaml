@@ -4,6 +4,15 @@
     http_proxy: "{{proxy.http_proxy}}"
     https_proxy: "{{proxy.https_proxy}}"
     no_proxy: "{{proxy.no_proxy}}"
+
+  pre_tasks:
+    - name: install packages
+      become: true
+      ansible.builtin.package:
+        name:
+          - git
+        state: present
+
   roles:
     
     - { role: docker, tags: docker}
