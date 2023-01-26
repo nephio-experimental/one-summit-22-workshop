@@ -5,4 +5,6 @@
     https_proxy: "{{proxy.https_proxy}}"
     no_proxy: "{{proxy.no_proxy}}"
   roles:
-    - {role: gitea/create, tags: gitea}
+    - role: dockerhub/login
+    - { role: gitea/create, tags: gitea}
+    - role: dockerhub/logout

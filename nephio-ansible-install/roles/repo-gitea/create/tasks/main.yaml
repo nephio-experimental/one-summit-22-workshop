@@ -17,6 +17,7 @@
   until: _result.status == 200
   retries: 12 # 12 * 5 seconds = 1min (60/5)
   delay: 5 # Every 5 seconds
+
 - name: Create repos
   ansible.builtin.uri:
     url: http://localhost:3000/api/v1/user/repos
@@ -32,6 +33,25 @@
   with_dict: "{{ clusters }}"
   when:
     - gitea_username is defined
+    - item.key != "mgmt"
+
+- name: Create repos
+  ansible.builtin.uri:
+    url: http://localhost:3000/api/v1/user/repos
+    headers:
+      Authorization: token {{ gitea_token['content'] | b64decode }}
+      Content-Type: application/json
+      accept: application/json
+    method: POST
+    body: {'auto_init': true, 'name': "nephio-catalog"}
+    status_code: 201
+    body_format: json
+  register: result
+  with_dict: "{{ clusters }}"
+  when:
+    - gitea_username is defined
+    - item.key == "mgmt"
+
 - name: Print return information from the previous task
   ansible.builtin.debug:
     var: result

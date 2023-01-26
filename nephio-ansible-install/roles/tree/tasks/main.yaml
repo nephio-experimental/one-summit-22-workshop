@@ -5,4 +5,5 @@
 ---
 - name: ensure tree is installed
   become: true
-  apt: name=tree update_cache=yes
+  ansible.builtin.package:
+    name: tree

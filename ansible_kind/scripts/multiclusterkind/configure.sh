@@ -28,12 +28,14 @@ function _create_gh_secret {
 
     if [ -f "$nephio_gh_filename" ]; then
         for kubeconfig in ~/.kube/*.config; do
-            /home/ubuntu/.local/bin/kubectl create secret generic -n default \
-                github-personal-access-token \
-                --from-literal username=nephio-test \
-                --from-file password="${nephio_gh_filename}" \
-                --type kubernetes.io/basic-auth \
-                --kubeconfig "$kubeconfig"
+            if [ ! kubectl get secrets github-personal-access-token -n default --kubeconfig "$kubeconfig" ]; then
+                /home/ubuntu/.local/bin/kubectl create secret generic -n default \
+                    github-personal-access-token \
+                    --from-literal username=nephio-test \
+                    --from-file password="${nephio_gh_filename}" \
+                    --type kubernetes.io/basic-auth \
+                    --kubeconfig "$kubeconfig"
+            fi
         done
     fi
     rm -rf "${nephio_gh_filename}"
@@ -93,8 +95,8 @@ kpt live apply "$participant_path" --reconcile-timeout=15m --kubeconfig ~/.kube/
 
 # Install ConfigSync on each workload cluster
 for kubeconfig in ~/.kube/*.config; do
-    if [[ "$kubeconfig" =~ nephio.config$ ]]; then
-      continue
+    if [[ $kubeconfig =~ nephio.config$ ]]; then
+        continue
     fi
     _install_configsync "$kubeconfig"
 done

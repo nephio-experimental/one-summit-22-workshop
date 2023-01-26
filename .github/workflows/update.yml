@@ -19,7 +19,7 @@ jobs:
   check-dockerfile:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
       - name: update Dockerfile
         uses: ludeeus/dockerfile-updater@21.01.0
         with:

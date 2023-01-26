@@ -27,7 +27,7 @@
   when: item.key == "mgmt"
 
 - name: Deploy cluster {{ item.key }} 
-  shell: "kind create cluster --name {{ item.key }} --kubeconfig ~/.kube/{{ item.key }}-config --config /tmp/{{ item.key }}-cluster-config.yaml"
+  shell: "kind create cluster --name {{ item.key }} --kubeconfig ~/.kube/{{ item.key }}-config --config {{ tmp_directory }}/{{ item.key }}-cluster-config.yaml"
   register: result
   failed_when:
     - result.rc > 1
