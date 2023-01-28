@@ -6,6 +6,7 @@
 - name: check if docker already installed
   ansible.builtin.shell: service docker status
   register: docker_status
+  ignore_errors: yes
 
 - include_tasks: "docker-{{ ansible_os_family }}.yaml"
   args:
