@@ -1,8 +1,10 @@
-FROM us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss@sha256:eae70293915c10aae4909c407eaa0a59a813bbab9a21667fdbf0e72502b28c3e
+FROM us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss@sha256:95d41b3669e98ddcde8b39384197b585536814cc4f1485a27c51dbf8ef487afd
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && \
+# Workaround: rm -rf /etc/apt/sources.list.d/yarn.list -> https://github.com/yarnpkg/yarn/issues/8918
+RUN rm -rf /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && \
     apt-get install --no-install-recommends -y python3=3.9.2-3 python3-docker=4.1.0-1.2 && \
     rm -rf /var/lib/apt/lists/*
 
