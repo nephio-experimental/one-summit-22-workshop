@@ -55,7 +55,7 @@ machine.
 # login from your workstation, forwarding 7007 -> localhost:7007 on the remote VM.
 ssh -L7007:localhost:7007 -i ~/.ssh/nephio ubuntu@$IP
 # now you are in the remote VM, in there run
-kubectl --kubeconfig ~/.kube/nephio.config port-forward --namespace=nephio-webui svc/nephio-webui 7007
+kubectl --kubeconfig ~/.kube/mgmt-config port-forward --namespace=nephio-webui svc/nephio-webui 7007
 ```
 On your workstation you can now browse to the URL
 [http://localhost:7007](http://localhost:7007), and you should see something
@@ -76,7 +76,7 @@ ssh -i ~/.ssh/nephio ubuntu@$IP
 You can then check if you our cluster is working with `kubectl`:
 
 ```bash
-ubuntu@nephio-poc-001:~$ kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system get pods
+ubuntu@nephio-poc-001:~$ kubectl --kubeconfig ~/.kube/mgmt-config -n nephio-system get pods
 NAME                                                        READY   STATUS    RESTARTS   AGE
 ipam-controller-65fb5fc8d4-5m8ts                            2/2     Running   0          24m
 nephio-5gc-controller-594cfd86b8-c9vbf                      2/2     Running   0          24m
@@ -388,26 +388,22 @@ spec:
           uplinkThroughput: "1G"
           downlinkThroughput: "10G"
         n3:
-          - networkInstance: "sample-vpc"
-            networkName: "sample-n3-net"
+          - networkInstance: "external-vpc"
         n4:
-          - networkInstance: "sample-vpc"
-            networkName: "sample-n4-net"
+          - networkInstance: "internal-vpc"
         n6:
           - dnn: "internet"
             uePool:
-              networkInstance: "sample-vpc"
-              networkName: "ue-net"
+              networkInstance: "internet-vpc"
               prefixSize: "16"
             endpoint:
-              networkInstance: "sample-vpc"
-              networkName: "sample-n6-net"
+              networkInstance: "internet-vpc"
 ```
 
 Then, you can deploy it with:
 
 ```bash
-kubectl --kubeconfig ~/.kube/nephio.config apply -f topo.yaml
+kubectl --kubeconfig ~/.kube/mgmt-config apply -f topo.yaml
 ```
 
 What does the system do with this resources?
@@ -500,29 +496,29 @@ resetting your environment.
 ```bash
 
 # Restart each controller
-kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system rollout restart deploy package-deployment-controller-controller
-kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system rollout restart deploy nephio-5gc-controller
-kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system rollout restart deploy ipam-controller
-kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system rollout restart deploy nf-injector-controller
+kubectl --kubeconfig ~/.kube/mgmt-config -n nephio-system rollout restart deploy package-deployment-controller-controller
+kubectl --kubeconfig ~/.kube/mgmt-config -n nephio-system rollout restart deploy nephio-5gc-controller
+kubectl --kubeconfig ~/.kube/mgmt-config -n nephio-system rollout restart deploy ipam-controller
+kubectl --kubeconfig ~/.kube/mgmt-config -n nephio-system rollout restart deploy nf-injector-controller
 
 # Check to see if the restart is done
-kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system get po
+kubectl --kubeconfig ~/.kube/mgmt-config -n nephio-system get po
 ```
 
 ### Viewing Controller Logs
 
 ```bash
 # PackageDeployment controller
-kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system logs -c controller -l app.kubernetes.io/name=package-deployment-controller
+kubectl --kubeconfig ~/.kube/mgmt-config -n nephio-system logs -c controller -l app.kubernetes.io/name=package-deployment-controller
 
 # FiveGCoreTopologyController
-kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system logs -c controller -l app.kubernetes.io/name=nephio-5gc
+kubectl --kubeconfig ~/.kube/mgmt-config -n nephio-system logs -c controller -l app.kubernetes.io/name=nephio-5gc
 
 # NF Injector
-kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system logs -c controller -l app.kubernetes.io/name=nf-injector
+kubectl --kubeconfig ~/.kube/mgmt-config -n nephio-system logs -c controller -l app.kubernetes.io/name=nf-injector
 
 # IPAM controller
-kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system logs -c controller -l app.kubernetes.io/name=ipam
+kubectl --kubeconfig ~/.kube/mgmt-config -n nephio-system logs -c controller -l app.kubernetes.io/name=ipam
 ```
 
 ### Restarting the Web UI
@@ -530,11 +526,11 @@ kubectl --kubeconfig ~/.kube/nephio.config -n nephio-system logs -c controller -
 ```bash
 
 # Restart the deployment
-kubectl --kubeconfig ~/.kube/nephio.config -n nephio-webui rollout restart deploy nephio-webui
+kubectl --kubeconfig ~/.kube/mgmt-config -n nephio-webui rollout restart deploy nephio-webui
 
 # Check if the restart is complete
 
-kubectl --kubeconfig ~/.kube/nephio.config -n nephio-webui get po
+kubectl --kubeconfig ~/.kube/mgmt-config -n nephio-webui get po
 ```
 
 ### Cleaning Up Everything

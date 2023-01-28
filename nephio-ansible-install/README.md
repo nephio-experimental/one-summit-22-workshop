@@ -65,6 +65,11 @@ all:
       edge1: {mgmt_subnet: 172.89.0.0/16, pod_subnet: 10.197.0.0/16, svc_subnet: 10.97.0.0/16}
       edge2: {mgmt_subnet: 172.90.0.0/16, pod_subnet: 10.198.0.0/16, svc_subnet: 10.98.0.0/16}
       region1: {mgmt_subnet: 172.91.0.0/16, pod_subnet: 10.199.0.0/16, svc_subnet: 10.99.0.0/16}
+    networkInstances:
+      internal-vpc: {prefixes: [{prefix: 172.0.0.0/16, purpose: endpoint}]}
+      external-vpc: {prefixes: [{prefix: 172.1.0.0/16, purpose: endpoint}]}
+      sba-vpc: {prefixes: [{prefix: 172.2.0.0/16, purpose: endpoint}]}
+      internet-vpc: {prefixes: [{prefix: 172.3.0.0/16, purpose: endpoint}, {prefix: 10.0.0.0/8, purpose: pool}]}
   children:
     vm:
       hosts:

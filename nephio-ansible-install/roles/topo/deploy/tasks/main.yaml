@@ -11,7 +11,7 @@
 
 - name: deploy topo
   become: true
-  shell: clab deploy -t {{ tmp_directory }}/topology.yaml
+  shell: clab deploy -t {{ tmp_directory }}/topology.yaml -c
   register: result
   failed_when:
     - result.rc > 1
