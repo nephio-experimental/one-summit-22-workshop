@@ -388,20 +388,16 @@ spec:
           uplinkThroughput: "1G"
           downlinkThroughput: "10G"
         n3:
-          - networkInstance: "sample-vpc"
-            networkName: "sample-n3-net"
+          - networkInstance: "external-vpc"
         n4:
-          - networkInstance: "sample-vpc"
-            networkName: "sample-n4-net"
+          - networkInstance: "internal-vpc"
         n6:
           - dnn: "internet"
             uePool:
-              networkInstance: "sample-vpc"
-              networkName: "ue-net"
+              networkInstance: "internet-vpc"
               prefixSize: "16"
             endpoint:
-              networkInstance: "sample-vpc"
-              networkName: "sample-n6-net"
+              networkInstance: "internet-vpc"
 ```
 
 Then, you can deploy it with:
