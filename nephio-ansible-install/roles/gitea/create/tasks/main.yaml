@@ -12,6 +12,8 @@
   ansible.builtin.file:
     path: /home/{{ cloud_user}}/gitea
     state: directory
+    owner: "{{ getent_passwd[cloud_user].1 }}"
+    group: "{{ getent_passwd[cloud_user].2 }}"
     mode: '0755'
 - name: Start gitea container
   docker_container:
@@ -22,11 +24,11 @@
     user: "{{ getent_passwd[cloud_user].1 }}:{{ getent_passwd[cloud_user].2 }}"
     restart: yes
     ports:
-      - "127.0.0.1:3000:3000/tcp"
-      - "127.0.0.1:2222:2222/tcp"
+      - "3000:3000"
+      - "2222:2222"
     env:
-        GITEA_APP_INI: "/var/lib/gitea/custom/conf/app.ini"
-        INSTALL_LOCK: "true"
+      GITEA_APP_INI: "/var/lib/gitea/custom/conf/app.ini"
+      INSTALL_LOCK: "true"
     volumes:
       - /home/{{ cloud_user }}/gitea:/var/lib/gitea:rw
   when:

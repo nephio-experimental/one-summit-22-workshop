@@ -58,7 +58,7 @@ module "compute_instances" {
 
 # # VM configuration through ansible playbooks
 resource "local_file" "ansible_inventory" {
-  content    = templatefile("../ansible_kind/hosts.tftpl", { hosts = { for k, vm in module.compute_instances : k => vm.instances_details[*].*.network_interface[0].*.access_config[0].*.nat_ip[0] }, user = local.user })
+  content    = templatefile("../ansible_kind/hosts.tftpl", { hosts = { for k, vm in module.compute_instances : k => vm.instances_details[*].network_interface[0].access_config[0].nat_ip }, user = local.user })
   filename   = "../ansible_kind/hosts"
   depends_on = [module.compute_instances]
 }

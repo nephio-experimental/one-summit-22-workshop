@@ -5,4 +5,4 @@
     https_proxy: "{{proxy.https_proxy}}"
     no_proxy: "{{proxy.no_proxy}}"
   roles:
-    - { role: repo/create, tags: repo }
+    - {role: repo/create, tags: repo}

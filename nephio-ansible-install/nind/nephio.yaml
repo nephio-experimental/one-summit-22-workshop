@@ -1,0 +1,35 @@
+---
+all:
+  vars:
+    cloud_user: user
+    gitea_username: nephio
+    gitea_password: nephio
+    proxy:
+      http_proxy: 
+      https_proxy:
+      no_proxy:
+    host_os: "linux"  # use "darwin" for MacOS X, "windows" for Windows
+    host_arch: "amd64"  # other possible values: "386","arm64","arm","ppc64le","s390x"
+    tmp_directory: "/tmp"
+    bin_directory: "/usr/local/bin"
+    kubectl_version: "1.25.0"
+    kubectl_checksum_binary: "sha512:fac91d79079672954b9ae9f80b9845fbf373e1c4d3663a84cc1538f89bf70cb85faee1bcd01b6263449f4a2995e7117e1c85ed8e5f137732650e8635b4ecee09"
+    kind_version: "0.17.0"
+    cni_version: "0.8.6"
+    kpt_version: "1.0.0-beta.23"
+    multus_cni_version: "3.9.2"
+    nephio:
+      install_dir: nephio-install
+      packages_url: https://github.com/nephio-project/nephio-packages.git
+    clusters:
+      mgmt: {mgmt_subnet: 172.88.0.0/16, pod_subnet: 10.196.0.0/16, svc_subnet: 10.96.0.0/16}
+      edge1: {mgmt_subnet: 172.89.0.0/16, pod_subnet: 10.197.0.0/16, svc_subnet: 10.97.0.0/16}
+      edge2: {mgmt_subnet: 172.90.0.0/16, pod_subnet: 10.198.0.0/16, svc_subnet: 10.98.0.0/16}
+      region1: {mgmt_subnet: 172.91.0.0/16, pod_subnet: 10.199.0.0/16, svc_subnet: 10.99.0.0/16}
+  children:
+    vm:
+      hosts:
+        localhost:
+          vars:
+            ansible_connection: local
+            ansible_python_interpreter: "{{ansible_playbook_python}}"

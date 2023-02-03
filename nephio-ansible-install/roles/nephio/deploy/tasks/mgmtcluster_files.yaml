@@ -60,3 +60,26 @@
     - result.rc == 1 and "already exists" not in result.stderr
   when:
     - gitea_username is defined
+
+- name: configure nephio ingress
+  shell: |
+    kubectl --kubeconfig ~/.kube/mgmt-config \
+      apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+
+- name: wait for ingress controller
+  shell: |
+    kubectl wait --kubeconfig ~/.kube/mgmt-config \
+      --namespace ingress-nginx \
+      --for=condition=ready pod \
+      --selector=app.kubernetes.io/component=controller \
+      --timeout=180s
+
+- name: copy github root sync
+  template:
+    src: "{{ role_path }}/templates/nephio-ingress.j2"
+    dest: "{{ tmp_directory }}/nephio-ingress.yaml"
+    mode: 0644
+
+- name: configure nephio ingress
+  shell: |
+    kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{tmp_directory}}/nephio-ingress.yaml

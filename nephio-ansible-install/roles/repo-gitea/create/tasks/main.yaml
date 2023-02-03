@@ -8,6 +8,15 @@
   register: gitea_token
   when:
     - gitea_username is defined
+- name: Pause until the gitea API is up and running
+  ansible.builtin.uri:
+    url: http://localhost:3000/api/v1/version
+    follow_redirects: none
+    method: GET
+  register: _result
+  until: _result.status == 200
+  retries: 12 # 12 * 5 seconds = 1min (60/5)
+  delay: 5 # Every 5 seconds
 
 - name: Create repos
   ansible.builtin.uri:
