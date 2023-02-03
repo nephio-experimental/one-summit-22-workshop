@@ -1,0 +1,9 @@
+## © 2023 Nephio Authors
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+---
+
+- name: login into dockerhub using docker runtime
+  docker_login:
+    username: "{{ dockerhub_username }}"
+    password: "{{ dockerhub_token }}"

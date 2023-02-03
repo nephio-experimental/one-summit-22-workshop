@@ -2,7 +2,6 @@
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
 ---
-
 - name: Deploy multus {{ item.key }} 
   shell: 'kubectl --kubeconfig ~/.kube/{{ item.key }}-config apply --filename="https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/v{{ multus_cni_version }}/deployments/multus-daemonset-thick-plugin.yml"'
   #ignore_errors: true
@@ -10,4 +9,3 @@
   failed_when:
     - result.rc > 1
     - result.rc == 1 and "already exists" not in result.stderr
-

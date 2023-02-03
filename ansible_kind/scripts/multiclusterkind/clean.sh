@@ -55,9 +55,10 @@ kubectl --kubeconfig ~/.kube/nephio.config delete packagedeployments --all
 repos=(catalog regional edge-1 edge-2)
 
 for p in "$@"; do
+    echo "$p"
     for r in "${repos[@]}"; do
 # PackageRevisions are NOT deleted (TODO item), so we need to do that 
         echo kpt alpha rpkg --kubeconfig ~/.kube/nephio.config del -n default \$\(kubectl --kubeconfig ~/.kube/nephio.config get packagerevision --output jsonpath="{.items[?(.spec.repository == '$r')].metadata.name}"\)
-        kpt alpha rpkg --kubeconfig ~/.kube/nephio.config del -n default $(kubectl --kubeconfig ~/.kube/nephio.config get packagerevision --output jsonpath="{.items[?(.spec.repository == '$r')].metadata.name}")
+        kpt alpha rpkg --kubeconfig ~/.kube/nephio.config del -n default "$(kubectl --kubeconfig ~/.kube/nephio.config get packagerevision --output jsonpath="{.items[?(.spec.repository == '$r')].metadata.name}")"
     done
 done

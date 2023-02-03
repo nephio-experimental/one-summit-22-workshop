@@ -5,4 +5,4 @@
     https_proxy: "{{proxy.https_proxy}}"
     no_proxy: "{{proxy.no_proxy}}"
   roles:
-    - { role: repo-gitea/create, tags: repo-gitea }
+    - {role: repo-gitea/create, tags: repo-gitea}

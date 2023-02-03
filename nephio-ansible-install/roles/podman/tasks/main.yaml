@@ -1,0 +1,25 @@
+## © 2023 Nephio Authors
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+
+---
+- name: installing podman
+  become: true
+  ansible.builtin.package:
+    name: "podman"
+    state: latest
+
+- name: create podman network for kind
+  containers.podman.podman_network:
+    name: kind
+    driver: bridge
+
+- name: add docker alias for podman
+  lineinfile:
+    path=/home/{{ cloud_user }}/.bashrc
+    line="alias docker=podman"
+
+- name: source the file
+  shell: "source /home/{{ cloud_user }}/.bashrc"
+  args:
+    executable: /bin/bash

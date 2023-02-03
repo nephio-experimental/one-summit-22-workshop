@@ -2,20 +2,36 @@
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
 ---
-
-- name: Copy cluster config template
+- name: Copy cluster config template for non management cluster
   template:
     src: "{{ role_path }}/templates/cluster-config.yaml.j2"
     dest: "{{ tmp_directory }}/{{ item.key }}-cluster-config.yaml"
     mode: 0644
   tags:
     - create
+  when: item.key != "mgmt"
 
-- name: Deploy cluster {{ item.key }} 
+- name: Copy cluster config template for management cluster
+  template:
+    src: "{{ role_path }}/templates/mgmt-cluster-config.yaml.j2"
+    dest: "{{ tmp_directory }}/{{ item.key }}-cluster-config.yaml"
+    mode: 0644
+  tags:
+    - create
+  when: item.key == "mgmt"
+
+- name: Deploy cluster {{ item.key }}
   shell: "kind create cluster --name {{ item.key }} --kubeconfig ~/.kube/{{ item.key }}-config --config {{ tmp_directory }}/{{ item.key }}-cluster-config.yaml"
   register: result
   failed_when:
     - result.rc > 1
     - result.rc == 1 and "already exists" not in result.stderr
+  when: container_engine == "docker"
 
-
+- name: Deploy cluster {{ item.key }}
+  shell: "KIND_EXPERIMENTAL_PROVIDER=podman kind create cluster --name {{ item.key }} --kubeconfig ~/.kube/{{ item.key }}-config --config {{ tmp_directory }}/{{ item.key }}-cluster-config.yaml"
+  register: result
+  failed_when:
+    - result.rc > 1
+    - result.rc == 1 and "already exists" not in result.stderr
+  when: container_engine == "podman"
