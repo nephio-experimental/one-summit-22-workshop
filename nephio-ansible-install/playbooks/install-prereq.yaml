@@ -1,4 +1,27 @@
 ---
+# Play to check for minimum hardware requirements on host system before proceeding with installation
+- hosts: vm
+  serial: 1
+
+  pre_tasks:
+    - name: Minimum requirements check before installing Nephio in system
+      block:
+        - name: Check if VM has minimum number of vCPUs to install Nephio
+          ansible.builtin.pause:
+            prompt: "VM does not have the minimum number of vCPUs - {{ ansible_facts['processor_vcpus'] }}. Minimum required vCPUs - {{ host_min_vcpu }}\nPress Ctrl + C for options or Enter/Return key to skip this warning"
+          when: ansible_facts['processor_vcpus'] | int < host_min_vcpu
+
+        - name: Check if VM has minimum CPU RAM to install Nephio
+          ansible.builtin.pause:
+            prompt: "VM does not have enough CPU RAM - {{ ansible_facts['memtotal_mb'] / 1024 }} GB. Minimum required CPU RAM - {{ host_min_cpu_ram }} GB\nPress Ctrl + C for options or Enter/Return key to skip this warning"
+          when: (ansible_facts['memtotal_mb'] / 1024) | int < host_min_cpu_ram
+
+        - name: Check if VM has enough disk space to install Nephio [root disk partition for Linux distros]
+          ansible.builtin.pause:
+            prompt: "VM does not have enough disk space {{ '{:0.2f}'.format((ansible_mounts|json_query('[?mount == `/`].size_available'))[0] / (1024|pow(3))) }} GB. Minimum required root disk partition space - {{ host_min_root_disk_space }} GB\nPress Ctrl + C for options or Enter/Return key to skip this warning"
+          when: ((ansible_mounts|json_query('[?mount == `/`].size_available'))[0] / (1024|pow(3))) | int < host_min_root_disk_space
+      when: ansible_facts['os_family'] == "RedHat" or ansible_facts['os_family'] == "Debian"
+
 - hosts: vm
   environment:
     http_proxy: "{{proxy.http_proxy}}"

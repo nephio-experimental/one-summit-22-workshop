@@ -10,6 +10,9 @@ all:
       no_proxy:
     host_os: "linux"  # use "darwin" for MacOS X, "windows" for Windows
     host_arch: "amd64"  # other possible values: "386","arm64","arm","ppc64le","s390x"
+    host_min_vcpu: 8 # minimum required vCPUs before install
+    host_min_cpu_ram: 32  # minimum required CPU RAM before install; value in GB
+    host_min_root_disk_space: 50 # minimum required disk space before install; value in GB
     tmp_directory: "/tmp"
     bin_directory: "/usr/local/bin"
     kubectl_version: "1.25.0"
