@@ -43,6 +43,7 @@ all:
     gitea_password: <gitea password>
     dockerhub_username: <dockerhub username>
     dockerhub_token: <dockerhub token or password>
+    container_engine: < either docker or podman>
     proxy:
       http_proxy: 
       https_proxy:

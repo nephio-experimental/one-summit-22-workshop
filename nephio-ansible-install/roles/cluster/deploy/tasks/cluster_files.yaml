@@ -2,33 +2,48 @@
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
 ---
-- name: Copy cluster config template
+- name: Copy non-management cluster config template
   template:
     src: "{{ role_path }}/templates/cluster-config.yaml.j2"
     dest: "{{ tmp_directory }}/{{ item.key }}-cluster-config.yaml"
     mode: 0644
   tags:
     - create
+  when: item.key != "mgmt"
 
-- name: Add extra port mapping for mgmt cluster ingress
-  shell: |
-    cat <<EOF >> {{ tmp_directory }}/{{ item.key }}-cluster-config.yaml
-        kubeadmConfigPatches:
-        - |
-          kind: InitConfiguration
-          nodeRegistration:
-            kubeletExtraArgs:
-              node-labels: "ingress-ready=true"
-        extraPortMappings:
-        - containerPort: 80
-          hostPort: 7007
-          protocol: TCP
-    EOF
+- name: Copy managment cluster config template
+  template:
+    src: "{{ role_path }}/templates/mgmt-cluster-config.yaml.j2"
+    dest: "{{ tmp_directory }}/{{ item.key }}-cluster-config.yaml"
+    mode: 0644
+  tags:
+    - create
   when: item.key == "mgmt"
 
-- name: Deploy cluster {{ item.key }} 
-  shell: "kind create cluster --name {{ item.key }} --kubeconfig ~/.kube/{{ item.key }}-config --config {{ tmp_directory }}/{{ item.key }}-cluster-config.yaml"
+- name: Deploy docker cluster {{ item.key }}
+  shell: "kind create cluster --name {{ item.key }} --kubeconfig /home/{{ cloud_user }}/.kube/{{ item.key }}-config --config {{ tmp_directory }}/{{ item.key }}-cluster-config.yaml"
   register: result
   failed_when:
     - result.rc > 1
     - result.rc == 1 and "already exists" not in result.stderr
+  when: container_engine == "docker"
+
+- name: Deploy podman cluster {{ item.key }}
+  block: 
+    - name: create cluster
+      shell: "KIND_EXPERIMENTAL_PROVIDER=podman kind create cluster --name {{ item.key }} --kubeconfig /home/{{ cloud_user }}/.kube/{{ item.key }}-config --config {{ tmp_directory }}/{{ item.key }}-cluster-config.yaml"
+      register: result
+      failed_when:
+        - result.rc > 1
+        - result.rc == 1 and "already exists" not in result.stderr
+
+    - name: give {{ cloud_user }} permisions to the kubeconfig file when running {{ container_engine }}
+      ansible.builtin.file:
+        state: directory
+        path: /home/{{ cloud_user }}/.kube
+        owner: root
+        group: root
+        mode: '0775'
+        recurse: yes
+  when: container_engine == "podman"
+  become: true
