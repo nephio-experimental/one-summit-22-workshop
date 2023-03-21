@@ -2,8 +2,5 @@
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
 ---
-
-- name: login into dockerhub
-  docker_login:
-    username: "{{ dockerhub_username }}"
-    password: "{{ dockerhub_token }}"
+- name: include tasks specific to "{{ container_engine }}"
+  ansible.builtin.include_tasks: "{{ container_engine }}.yaml"

@@ -4,12 +4,14 @@
 ---
 - name: systctl config
   become: true
-  lineinfile: 
+  lineinfile:
     path: /etc/sysctl.conf
     line: "{{ item }}"
   with_items:
     - fs.inotify.max_user_watches=524288
     - fs.inotify.max_user_instances=512
+    - kernel.keys.maxkeys=500000
+    - kernel.keys.maxbytes=1000000
 
 - name: systctl config
   become: true
@@ -17,6 +19,8 @@
   with_items:
     - sysctl fs.inotify.max_user_watches=524288
     - sysctl fs.inotify.max_user_instances=512
+    - sysctl kernel.keys.maxkeys=500000
+    - sysctl kernel.keys.maxbytes=1000000
 
 - name: deploy clusters
   include_tasks: cluster_files.yaml

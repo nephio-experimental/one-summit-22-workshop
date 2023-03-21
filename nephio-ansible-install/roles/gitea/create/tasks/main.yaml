@@ -12,51 +12,40 @@
   ansible.builtin.file:
     path: /home/{{ cloud_user}}/gitea
     state: directory
-    owner: "{{ getent_passwd[cloud_user].1 }}"
-    group: "{{ getent_passwd[cloud_user].2 }}"
     mode: '0755'
-- name: Start gitea container
-  docker_container:
-    name: gitea
-    image: gitea/gitea:1.17.3-rootless
-    networks:
-      - name: kind
-    user: "{{ getent_passwd[cloud_user].1 }}:{{ getent_passwd[cloud_user].2 }}"
-    restart: yes
-    ports:
-      - "3000:3000"
-      - "2222:2222"
-    env:
-      GITEA_APP_INI: "/var/lib/gitea/custom/conf/app.ini"
-      INSTALL_LOCK: "true"
-    volumes:
-      - /home/{{ cloud_user }}/gitea:/var/lib/gitea:rw
+- name: Start gitea container when using "{{ container_engine }}"
+  ansible.builtin.include_tasks: "{{ container_engine }}.yaml"
   when:
     - gitea_username is defined
     - gitea_password is defined
-- name: Wait for gitea to initialise
-  ansible.builtin.wait_for:
-    path: /home/{{ cloud_user }}/gitea/ssh
-  when:
-    - gitea_username is defined
-    - gitea_password is defined
-- name: Creating nephio user in gitea
-  shell: |
-    docker exec gitea \
-      gitea admin user create \
-        --username {{ gitea_username }} \
-        --password {{ gitea_password }} \
-        --must-change-password=false \
-        --access-token \
-        --email=nephio@nephio.org > /home/{{ cloud_user }}/gitea/nephio-create
-  when:
-    - gitea_username is defined
-    - gitea_password is defined
-- name: Creating nephio user in gitea
-  shell: |
-    grep 'Access token was successfully created... ' /home/{{ cloud_user }}/gitea/nephio-create | \
-    sed 's/Access token was successfully created... //' | \
-    tr -d '\r\n' > /home/{{ cloud_user }}/gitea/nephio-gitea-token
+
+- block:
+    - name: Wait for gitea to initialise
+      ansible.builtin.wait_for:
+        path: /home/{{ cloud_user }}/gitea/ssh
+
+    - name: Creating nephio user in gitea
+      shell: |
+        {{ container_engine }} exec gitea gitea admin user create --username {{ gitea_username }} --password {{ gitea_password }} --must-change-password=false --access-token --email=nephio@nephio.org
+      register: user_cmd_output
+
+    - name: write output to a file
+      become: true
+      ansible.builtin.copy:
+        content: "{{ user_cmd_output }}"
+        dest: /home/{{ cloud_user }}/gitea/nephio-create
+
+    - name: capture gitea token
+      set_fact:
+        giteatoken: "{{ item | split('... ') | last }}"
+      when: item | regex_search('Access token was successfully created')
+      loop: "{{user_cmd_output.stdout_lines}}"
+
+    - name: write token to a file
+      become: true
+      ansible.builtin.copy:
+        content: "{{ giteatoken }}"
+        dest: /home/{{ cloud_user }}/gitea/nephio-gitea-token
   when:
     - gitea_username is defined
     - gitea_password is defined

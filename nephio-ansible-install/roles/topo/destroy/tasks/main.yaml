@@ -5,4 +5,4 @@
 ---
 - name: destroy topo
   become: true
-  shell: clab destroy -t {{ tmp_directory }}/topology.yaml
+  shell: clab destroy -r {{ container_engine }} -t {{ tmp_directory }}/topology.yaml
