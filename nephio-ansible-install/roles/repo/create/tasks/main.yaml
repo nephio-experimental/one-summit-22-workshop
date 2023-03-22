@@ -11,6 +11,7 @@
 - name: create repo nephio-{{ item.key }}
   ansible.builtin.uri:
     url: "{{ github_url }}"
+    validate_certs: "{{ validate_certs }}"
     headers:
       Accept: application/vnd.github+json
       Authorization: Bearer {{ github_token }}
@@ -28,6 +29,7 @@
 - name: create repo nephio-catalog
   ansible.builtin.uri:
     url: "{{ github_url }}"
+    validate_certs: "{{ validate_certs }}"
     headers:
       Accept: application/vnd.github+json
       Authorization: Bearer {{ github_token }}

@@ -9,6 +9,7 @@
     #checksum: "{{ kubectl_checksum_binary }}"
     dest: "{{ tmp_directory }}/kpt"
     mode: 0600
+    validate_certs: "{{ validate_certs }}"
   tags:
     - kpt
 

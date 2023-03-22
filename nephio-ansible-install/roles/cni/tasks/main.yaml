@@ -14,6 +14,7 @@
     url: https://github.com/containernetworking/plugins/releases/download/v{{ cni_version }}/cni-plugins-{{ host_os }}-{{ host_arch }}-v{{ cni_version }}.tgz
     dest: "{{ tmp_directory }}"
     mode: 0600
+    validate_certs: "{{ validate_certs }}"
   tags:
     - cni
 
