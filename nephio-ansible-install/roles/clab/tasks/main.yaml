@@ -8,54 +8,46 @@
   shell: bash -c "$(wget -qO - https://get.containerlab.dev)"
   when: validate_certs
 
+- name: Download, configure, and Execute the clabinstaller.sh
+  block:
+    - name: Create clab installation directory
+      file:
+        path: "{{ tmp_directory }}/clab_install"
+        state: directory
 
-- name: Create clab installation directory
-  become: true
-  file:
-    path: "{{ tmp_directory }}/clab_install"
-    state: directory
-  when: not validate_certs
+    - name: Download clab script
+      ansible.builtin.get_url:
+        url: "https://get.containerlab.dev"
+        dest: "{{ tmp_directory }}/clab_install/clabinstaller.sh"
+        mode: 0755
+        validate_certs: false
 
-- name: Download clab script
-  become: true
-  ansible.builtin.get_url:
-    url: "https://get.containerlab.dev"
-    dest: "{{ tmp_directory }}/clab_install/clabinstaller.sh"
-    mode: 0755
-    validate_certs: false
-  when: not validate_certs
+    - name: "Replace for curl insecure mode1"
+      replace:
+        path: "{{ tmp_directory }}/clab_install/clabinstaller.sh"
+        regexp: 'curl -s'
+        replace: 'curl -ks'
+        backup: yes
 
-- name: "Replace for curl insecure mode1"
-  become: true
-  replace:
-    path: "{{ tmp_directory }}/clab_install/clabinstaller.sh"
-    regexp: 'curl -s'
-    replace: 'curl -ks'
-    backup: yes
-  when: not validate_certs
+    - name: "Replace for curl insecure mode2"
+      replace:
+        path: "{{ tmp_directory }}/clab_install/clabinstaller.sh"
+        regexp: 'curl -S'
+        replace: 'curl -kS'
+        backup: yes
 
-- name: "Replace for curl insecure mode2"
-  become: true
-  replace:
-    path: "{{ tmp_directory }}/clab_install/clabinstaller.sh"
-    regexp: 'curl -S'
-    replace: 'curl -kS'
-    backup: yes
-  when: not validate_certs
+    - name: "Replace for wget insecure mode"
+      replace:
+        path: "{{ tmp_directory }}/clab_install/clabinstaller.sh"
+        regexp: 'wget -q'
+        replace: 'wget --no-check-certificate -q'
+        backup: yes
 
-- name: "Replace for wget insecure mode"
-  become: true
-  replace:
-    path: "{{ tmp_directory }}/clab_install/clabinstaller.sh"
-    regexp: 'wget -q'
-    replace: 'wget --no-check-certificate -q'
-    backup: yes
+    - name: Execute the clabinstaller.sh
+      become: true
+      shell: bash -c "{{ tmp_directory }}/clab_install/clabinstaller.sh"    
   when: not validate_certs
-
-- name: Execute the clabinstaller.sh
   become: true
-  shell: bash -c "{{ tmp_directory }}/clab_install/clabinstaller.sh"
-  when: not validate_certs
 
 - name: Remove the clabinstaller.sh
   become: true
