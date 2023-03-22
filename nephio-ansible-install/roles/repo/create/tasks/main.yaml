@@ -4,7 +4,7 @@
 ---
 - name: github url
   set_fact:
-    github_url: "{{  'https://api.{{ github_uri }}/user/repos' }}"
+    github_url: "{{ 'https://api.github.com/orgs/{{ github_organization }}/repos' if (github_organization is defined and github_organization != '') else 'https://api.github.com/user/repos' }}"
   when:
     - github_username is defined
 
