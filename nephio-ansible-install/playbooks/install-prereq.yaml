@@ -1,26 +1,40 @@
 ---
 - hosts: vm
+
   environment:
     http_proxy: "{{proxy.http_proxy}}"
     https_proxy: "{{proxy.https_proxy}}"
     no_proxy: "{{proxy.no_proxy}}"
 
   pre_tasks:
+    - name: set fact for container engine
+      ansible.builtin.set_fact:
+        container_engine: docker
+      when: (container_engine is not defined)
+
     - name: install packages
       become: true
       ansible.builtin.package:
         name:
           - git
+          - wget
         state: present
 
   roles:
-    
-    - { role: docker, tags: docker}
+    - role: docker
+      tags: docker
+      when: ( container_engine is not defined ) or ( container_engine == "docker" )
+    - role: podman
+      tags: podman
+      when: container_engine == "podman"
     - { role: kubectl, tags: kubectl}
     - { role: kind, tags: kind}
     - { role: kpt, tags: kpt}
     - { role: cni, tags: cni }
     - { role: bash, tags: bash }
     - { role: tree, tags: tree}
-    - { role: nephio/install, tags: nephio}
+    - role: nephio/install
+      tags: nephio
+      environment:
+        KPT_FN_RUNTIME: "{{ container_engine }}"
     - { role: clab, tags: clab}

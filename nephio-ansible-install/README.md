@@ -45,6 +45,7 @@ all:
     dockerhub_username: <dockerhub username>
     dockerhub_token: <dockerhub token or password>
     validate_certs: true <change this to false if you want to avoid ssl/tls check>
+    container_engine: < either docker or podman>
     proxy:
       http_proxy: 
       https_proxy:
