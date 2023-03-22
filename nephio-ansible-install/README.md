@@ -38,8 +38,7 @@ all:
     cloud_user: <username that is used to access the VM>
     github_username: <GitHub username>
     github_token: <GitHub personal access token>
-    github_uri: github.com <replace this if you have a different github domain name in case of organization hosted github>
-    github_organization: <if a GitHub organization is used this should be filled out with the GitHub organization, else provide your github username>
+    github_organization: <optional, if a GitHub organization is used this should be filled out with the GitHub organization>
     gitea_username: <gitea username>
     gitea_password: <gitea password>
     dockerhub_username: <dockerhub username>
@@ -79,7 +78,7 @@ Some customizations are required to tailor the installation to your environment.
 - cloud_user: the username that is created to access the VM using SSH
 - github_username: your GitHub username
 - github_token: GitHub access token to access GitHub [GitHub personal access token](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
-- github_organization: if you use a GitHub organization for the repositories you should add your GitHub organization here, otherwise it uses the GitHub username. This is used to connect to github repos on the ui.
+- github_organization: (optional) if you use a GitHub organization for the repositories you should add your GitHub organization here, otherwise it uses the GitHub username
 - gitea_username: your [gitea](https://gitea.io) (local repository) username
 - gitea_password: your [gitea](https://gitea.io) (local repository) password
 
