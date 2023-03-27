@@ -8,4 +8,7 @@
     - {role: cluster/deploy, tags: cluster_deploy}
     - {role: topo/deploy, tags: topo_deploy}
     - {role: multus, tags: multus}
-    - {role: nephio/deploy, tags: nephio}
+    - role: nephio/deploy
+      tags: nephio
+      environment:
+        KPT_FN_RUNTIME: "{{ container_engine }}"

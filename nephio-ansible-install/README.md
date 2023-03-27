@@ -43,6 +43,8 @@ all:
     gitea_password: <gitea password>
     dockerhub_username: <dockerhub username>
     dockerhub_token: <dockerhub token or password>
+    validate_certs: true <change this to false if you want to avoid ssl/tls check>
+    container_engine: < either docker or podman>
     proxy:
       http_proxy: 
       https_proxy:
@@ -102,9 +104,10 @@ ansible-galaxy collection install community.docker # required for gitea
 Now that the environment is up an running we can install the Nephio environment
 
 First we create some prerequisites, which installs kubectl, kind, kpt, cni and setup the bash environment
+-kK is for password promt to allow script to install dependencies.
 
 ```bash
-ansible-playbook playbooks/install-prereq.yaml
+ansible-playbook playbooks/install-prereq.yaml -kK
 ```
 
 Create the GitHub repository(s) Nephio uses (optional: either choose to run this step for GitHub or steps for gitea below)
@@ -126,9 +129,10 @@ ansible-playbook playbooks/create-gitea-repos.yaml
 ```
 
 Next we deploy the kind clusters and install the nephio components
+-kK is for password promt to allow script to install dependencies.
 
 ```bash
-ansible-playbook playbooks/deploy-clusters.yaml
+ansible-playbook playbooks/deploy-clusters.yaml -kK
 ```
 
 Lastly we install the environment manifests we use for the workshop scenario's

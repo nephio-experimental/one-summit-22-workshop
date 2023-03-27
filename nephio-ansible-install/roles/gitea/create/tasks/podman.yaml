@@ -1,0 +1,22 @@
+## © 2022 Nephio Authors
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+---
+- name: reset directory ownership with podman unshare
+  ansible.builtin.shell: podman unshare chown {{ getent_passwd[cloud_user].1 }}:{{ getent_passwd[cloud_user].2 }} /home/{{ cloud_user }}/gitea
+
+- name: Start gitea container
+  containers.podman.podman_container:
+    name: gitea
+    image: docker.io/gitea/gitea:1.17.3-rootless
+    network: kind
+    user: "{{ getent_passwd[cloud_user].1 }}:{{ getent_passwd[cloud_user].2 }}"
+    restart: yes
+    ports:
+      - "127.0.0.1:3000:3000/tcp"
+      - "127.0.0.1:2222:2222/tcp"
+    env:
+      GITEA_APP_INI: "/var/lib/gitea/custom/conf/app.ini"
+      INSTALL_LOCK: "true"
+    volumes:
+      - /home/{{ cloud_user }}/gitea:/var/lib/gitea:Z
