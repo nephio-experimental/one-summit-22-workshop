@@ -4,6 +4,7 @@ all:
     cloud_user: user
     gitea_username: nephio
     gitea_password: nephio
+    validate_certs: true # change this to false if you want to avoid ssl/tls check
     proxy:
       http_proxy: 
       https_proxy:
