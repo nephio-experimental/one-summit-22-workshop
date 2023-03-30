@@ -5,6 +5,7 @@ all:
     gitea_username: nephio
     gitea_password: nephio
     validate_certs: true # change this to false if you want to avoid ssl/tls check
+    container_engine: docker # either docker or podman
     proxy:
       http_proxy: 
       https_proxy:
