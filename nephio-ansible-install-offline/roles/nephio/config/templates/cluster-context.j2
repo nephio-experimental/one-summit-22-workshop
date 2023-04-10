@@ -1,0 +1,9 @@
+apiVersion: infra.nephio.org/v1alpha1
+kind: ClusterContext
+metadata:
+  name: {{ item.key }}
+spec:
+  siteCode: {{ item.key }}
+  cniConfig:
+    cniType: macvlan
+    masterInterface: eth1

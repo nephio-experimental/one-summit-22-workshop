@@ -1,0 +1,14 @@
+## © 2023 Nephio Authors
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+---
+- name: logout of Dockerhub when using docker runtime
+  docker_login:
+    state: absent
+  when: (container_engine is not defined) or (container_engine  == 'docker')
+
+
+- name: logout of Dockerhub when using podman runtime
+  containers.podman.podman_logout:
+    registry: docker.io
+  when: (container_engine  == 'podman')

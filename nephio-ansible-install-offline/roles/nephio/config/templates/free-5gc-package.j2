@@ -1,0 +1,15 @@
+apiVersion: config.porch.kpt.dev/v1alpha1
+kind: Repository
+metadata:
+  name: free5gc-packages
+  namespace: default
+  labels:
+    kpt.dev/repository-content: external-blueprints
+spec:
+  content: Package
+  deployment: false
+  git:
+    branch: main
+    directory: /
+    repo: https://github.com/nephio-project/free5gc-packages.git
+  type: git

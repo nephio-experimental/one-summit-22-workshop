@@ -1,0 +1,30 @@
+## © 2023 Nephio Authors
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+
+---
+- name: check if docker already installed
+  ansible.builtin.shell: service docker status
+  register: docker_status
+  ignore_errors: true
+
+- include_tasks: "docker-{{ ansible_os_family }}.yaml"
+  args:
+    apply:
+      become: true
+  when: docker_status.rc != 0
+
+- name: Add user to docker group
+  ansible.builtin.user:
+    name: "{{ cloud_user }}"
+    group: docker
+  become: true
+  when: docker_status.rc != 0
+
+- name: Reset connection so docker group is picked up.
+  meta: reset_connection
+
+- name: Create the docker network for kind (to make our job easier plumbing up the lot)
+  docker_network:
+    name: kind
+    driver: bridge

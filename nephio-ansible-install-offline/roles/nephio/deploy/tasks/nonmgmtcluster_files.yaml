@@ -1,0 +1,87 @@
+## © 2022 Nephio Authors
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+
+---
+- name: github repo
+  set_fact:
+    github_repo: "{{ 'https://github.com/{{ github_organization}}/nephio-{{ item.key }}.git' if github_organization is defined else 'https://github.com/{{ github_username}}/nephio-{{ item.key }}.git' }}"
+  when:
+    - github_username is defined
+
+- name: deploy nephio-configsync on {{ item.key }} cluster
+  shell: kpt --kubeconfig ~/.kube/{{ item.key }}-config live init nephio-configsync
+  args: 
+    chdir: "{{ tmp_directory }}/{{ nephio.install_dir}}"
+  register: result
+  failed_when:
+    - result.rc > 1
+    - result.rc == 1 and "already" not in result.stderr
+
+- name: deploy nephio-configsync on {{ item.key }} cluster
+  shell: kpt --kubeconfig ~/.kube/{{ item.key }}-config live apply nephio-configsync --reconcile-timeout=15m --output=table
+  args: 
+    chdir: "{{ tmp_directory }}/{{ nephio.install_dir}}"
+
+- name: configure secret on {{ item.key }}
+  shell: kubectl --kubeconfig ~/.kube/{{ item.key }}-config create secret generic github-personal-access-token \
+    --namespace="config-management-system" \
+    --from-literal=username={{github_username}} \
+    --from-literal=token={{github_token}}
+  failed_when:
+    - result.rc > 1
+    - result.rc == 1 and "already exists" not in result.stderr
+  when:
+    - github_username is defined
+
+- name: copy github root sync
+  template:
+    src: "{{ role_path }}/templates/{{outer_item}}.j2"
+    dest: "{{ tmp_directory }}/{{outer_item}}-{{item.key}}.yaml"
+    mode: 0644
+  loop:
+    - github-root-sync
+  loop_control:
+    loop_var: outer_item
+  when:
+    - github_username is defined
+
+- name: configure github root sync
+  shell: kubectl --kubeconfig ~/.kube/{{ item.key }}-config apply -f {{ tmp_directory }}/github-root-sync-{{item.key}}.yaml
+  when:
+    - github_username is defined
+
+- name: Slurp gitea access token
+  ansible.builtin.slurp:
+    src: /home/{{ cloud_user }}/gitea/nephio-gitea-token
+  register: gitea_token
+  when:
+    - gitea_username is defined
+
+- name: configure secret on {{ item.key }}
+  shell: kubectl --kubeconfig ~/.kube/{{ item.key }}-config create secret generic gitea-access-token \
+    --namespace="config-management-system" \
+    --from-literal=username={{ gitea_username }} \
+    --from-literal=token={{ gitea_token['content'] | b64decode }}
+  failed_when:
+    - result.rc > 1
+    - result.rc == 1 and "already exists" not in result.stderr
+  when:
+    - gitea_username is defined
+
+- name: copy gitea root sync
+  template:
+    src: "{{ role_path }}/templates/{{outer_item}}.j2"
+    dest: "{{ tmp_directory }}/{{outer_item}}-{{item.key}}.yaml"
+    mode: 0644
+  loop:
+    - gitea-root-sync
+  loop_control:
+    loop_var: outer_item
+  when:
+    - gitea_username is defined
+
+- name: configure gitea root sync
+  shell: kubectl --kubeconfig ~/.kube/{{ item.key }}-config apply -f {{ tmp_directory }}/gitea-root-sync-{{item.key}}.yaml
+  when:
+    - gitea_username is defined

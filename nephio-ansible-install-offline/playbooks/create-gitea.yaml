@@ -1,0 +1,12 @@
+---
+- hosts: vm
+  environment:
+    http_proxy: "{{proxy.http_proxy}}"
+    https_proxy: "{{proxy.https_proxy}}"
+    no_proxy: "{{proxy.no_proxy}}"
+  roles:
+    - role: dockerhub/login
+      when: dockerhub_username is defined
+    - { role: gitea/create, tags: gitea}
+    - role: dockerhub/logout
+      when: dockerhub_username is defined

@@ -1,0 +1,6 @@
+## © 2023 Nephio Authors
+## Licensed under the Apache License 2.0
+## SPDX-License-Identifier: Apache-2.0
+---
+- name: include tasks specific to "{{ container_engine }}"
+  ansible.builtin.include_tasks: "{{ container_engine }}.yaml"
