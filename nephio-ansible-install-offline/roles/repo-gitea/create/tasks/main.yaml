@@ -27,7 +27,7 @@
       accept: application/json
     method: POST
     body: {'auto_init': true, 'name': "nephio-{{ item.key }}"}
-    status_code: 409
+    status_code: 201
     body_format: json
   register: result
   with_dict: "{{ clusters }}"
@@ -44,7 +44,7 @@
       accept: application/json
     method: POST
     body: {'auto_init': true, 'name': "nephio-catalog"}
-    status_code: 409
+    status_code: 201
     body_format: json
   register: result
   with_dict: "{{ clusters }}"
