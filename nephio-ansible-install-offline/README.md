@@ -4,6 +4,10 @@
 
 Offline installer is supported for Gitea, for github you need to make sure you have connectivity to your internal github from the VM.
 
+This installer is currently supported for - 
+os - linux
+arc - amd64
+
 
 This repository provides the artifacts to install a Nephio environment using ansible to experiment with Nephio following [nephio ONE summit 2022 workshop](https://github.com/nephio-project/one-summit-22-workshop). The installation creates kind clusters, GitHub repositories and the manifests to get a base Nephio environment up an running.
 
