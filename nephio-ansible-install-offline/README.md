@@ -29,6 +29,14 @@ version - v0.8.6
 download url -  https://github.com/srl-labs/containerlab/releases/download/v0.38.0/containerlab_0.38.0_linux_amd64.deb
 version - v0.38.0
 
+6. free5gc-packages
+Git url - https://github.com/nephio-project/free5gc-packages
+version - 02a209a4557e37b8e81ff1f7f963ded9e36d7b17
+
+7. nephio-packages
+Git url - https://github.com/nephio-project/nephio-packages
+version - 68883c8727478254f8c1f1e1dd40edf1d53f21d2
+
 
 
 This repository provides the artifacts to install a Nephio environment using ansible to experiment with Nephio following [nephio ONE summit 2022 workshop](https://github.com/nephio-project/one-summit-22-workshop). The installation creates kind clusters, GitHub repositories and the manifests to get a base Nephio environment up an running.
