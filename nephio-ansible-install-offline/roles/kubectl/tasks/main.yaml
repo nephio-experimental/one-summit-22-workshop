@@ -3,13 +3,16 @@
 ## SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: Download kubectl binary
-  ansible.builtin.get_url:
-    url: "https://storage.googleapis.com/kubernetes-release/release/v{{ kubectl_version }}/bin/{{ host_os }}/{{ host_arch }}/kubectl"
-    checksum: "{{ kubectl_checksum_binary }}"
-    dest: "{{ tmp_directory }}"
-    mode: 0600
-  tags:
+- name: Copy kubectl binary to tmp_directory
+  become: true
+  ansible.builtin.copy:
+    src: "{{ installer_lib }}/{{ item }}"
+    dest: "{{ tmp_directory }}/{{ item }}"
+    mode: "0755"
+    owner: "root"
+    group: "root"
+    remote_src: true
+  with_items:
     - kubectl
 
 - name: Copy kubectl binary to destination directory
