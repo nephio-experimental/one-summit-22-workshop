@@ -64,7 +64,7 @@
 - name: configure nephio ingress
   shell: |
     kubectl --kubeconfig ~/.kube/mgmt-config \
-      apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+      apply -f "{{ installer_lib }}/kind_deploy.yaml"
 
 - name: wait for ingress controller
   shell: |
@@ -83,3 +83,4 @@
 - name: configure nephio ingress
   shell: |
     kubectl --kubeconfig ~/.kube/mgmt-config apply -f {{tmp_directory}}/nephio-ingress.yaml
+

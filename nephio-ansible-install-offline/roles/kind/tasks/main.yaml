@@ -2,14 +2,17 @@
 ## Licensed under the Apache License 2.0
 ## SPDX-License-Identifier: Apache-2.0
 ---
-- name: Download kind binary
-  ansible.builtin.get_url:
-    url: "https://kind.sigs.k8s.io/dl/v{{ kind_version }}/kind-{{ host_os }}-{{ host_arch }}"
-    #checksum: "{{ kubectl_checksum_binary }}"
-    dest: "{{ tmp_directory }}/kind"
-    mode: 0600
-    validate_certs: "{{ validate_certs }}"
-  tags:
+
+- name: Copy kind binary to tmp_directory
+  become: true
+  ansible.builtin.copy:
+    src: "{{ installer_lib }}/{{ item }}"
+    dest: "{{ tmp_directory }}/{{ item }}"
+    mode: "0755"
+    owner: "root"
+    group: "root"
+    remote_src: true
+  with_items:
     - kind
 
 - name: Copy kind binary to destination directory
