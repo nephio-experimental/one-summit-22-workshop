@@ -47,7 +47,7 @@ In a local environment clone the repository in a local environment
 
 ```bash
 git clone https://github.com/nephio-project/one-summit-22-workshop.git
-cd one-summit-22-workshop/nephio-ansible-install
+cd one-summit-22-workshop/nephio-ansible-install-offline
 ```
 
 The installation requires an inventory file that is tailored to your enviornment. The ansible.config assumes the inventory file is located in inventory/nephio.yaml within the cloned environment. Create an inventory directory and the nephio.yaml file within the inventory directory
