@@ -47,6 +47,12 @@ The installation assumes a VM is created with the following characteristics:
 - 32G RAM, 8 vcpu -> we can change this based on the amount of kind clusters we need
 - 50GB disk (default 10GB disk on GCE is too small, 50GB is tested)
 - SSH access with a SSH key is setup + username
+- Docker
+- upgraded pip
+- ansible
+- pygithub
+- ansible-galaxy collection community.general
+- ansible-galaxy collection community.docker # required for gitea
 
 The creation of the VM is right now out of scope, but we can see what we can do going forward.
 Also we assume right now the ansible playbook is executed remote from the VM. We can see if people want to use a different approach going forward.
@@ -132,11 +138,6 @@ To start running ansible playbooks an ansible environment is required. Below is 
 ```python
 python3 -m venv .venv
 source .venv/bin/activate
-pip install --upgrade pip
-pip install ansible
-pip install pygithub
-ansible-galaxy collection install community.general
-ansible-galaxy collection install community.docker # required for gitea
 ```
 
 ## deploy nephio environment
