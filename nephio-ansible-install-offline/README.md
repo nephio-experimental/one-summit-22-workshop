@@ -8,6 +8,28 @@ This installer is currently supported for -
 os - linux
 arc - amd64
 
+Installer supported versions-
+1. kubectl
+download url - https://storage.googleapis.com/kubernetes-release/release/v1.25.0/bin/linux/amd64/kubectl
+version - v1.25.0
+
+2. kind
+download url - https://kind.sigs.k8s.io/dl/v0.17.0/kind-linux-amd64
+version - v0.17.0
+
+3. kpt
+download url - https://github.com/GoogleContainerTools/kpt/releases/download/v1.0.0-beta.23/kpt_linux_amd64
+version - v1.0.0-beta.23 
+
+4. cni
+download url - https://github.com/containernetworking/plugins/releases/download/v0.8.6/cni-plugins-linux-amd64-v0.8.6.tgz
+version - v0.8.6
+
+5. clab
+download url -  https://github.com/srl-labs/containerlab/releases/download/v0.38.0/containerlab_0.38.0_linux_amd64.deb
+version - v0.38.0
+
+
 
 This repository provides the artifacts to install a Nephio environment using ansible to experiment with Nephio following [nephio ONE summit 2022 workshop](https://github.com/nephio-project/one-summit-22-workshop). The installation creates kind clusters, GitHub repositories and the manifests to get a base Nephio environment up an running.
 
