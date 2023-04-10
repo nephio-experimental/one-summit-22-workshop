@@ -9,6 +9,12 @@
     state: directory
     mode: '0755'
 
+- name: Create tmp nephio-packages directory
+  ansible.builtin.file:
+    path: "{{ tmp_directory }}/nephio-packages"
+    state: directory
+    mode: '0755'
+
 - name: install packages
   include_tasks: packages_files.yaml
   with_items: 

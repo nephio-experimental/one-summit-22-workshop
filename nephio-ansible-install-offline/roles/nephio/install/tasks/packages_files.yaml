@@ -3,16 +3,20 @@
 ## SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: Download the {{ item.package }} packages, with url {{ nephio.packages_url }}/{{ item.package }}
-  shell: kpt pkg get --for-deployment {{ nephio.packages_url }}/{{ item.package }}
-  args: 
-    chdir: "{{ tmp_directory }}/{{ nephio.install_dir}}"
-  register: result
-  failed_when:
-    - result.rc > 1
-    - result.rc == 1 and "already exists" not in result.stderr
+- name: Unarchive nephio packages archive
+  ansible.builtin.unarchive:
+    src: "{{ installer_lib }}/nephio-packages.tar"
+    dest: "{{ tmp_directory }}/nephio-packages"
+    remote_src: true
+
+- name: Copy {{ item.package }} to tmp_directory
+  ansible.builtin.copy:
+    src: "{{ tmp_directory }}/nephio-packages/nephio-packages/{{ item.package }}"
+    dest: "{{ tmp_directory }}/{{ nephio.install_dir}}"
+    remote_src: true
 
 - name: Initialize {{ item.package }}
+  become: true
   shell: kpt fn render {{ item.package }}
   args: 
     chdir: "{{ tmp_directory }}/{{ nephio.install_dir}}"
