@@ -39,12 +39,12 @@ all:
     github_username: <GitHub username>
     github_token: <GitHub personal access token>
     github_organization: <optional, if a GitHub organization is used this should be filled out with the GitHub organization>
-    gitea_username: <gitea username>
-    gitea_password: <gitea password>
+    gitea_username: nephio #keep this as nephio, user will be created at runtime
+    gitea_password: <gitea password> #desired password for user nephio
     dockerhub_username: <dockerhub username>
     dockerhub_token: <dockerhub token or password>
     validate_certs: true <change this to false if you want to avoid ssl/tls check>
-    container_engine: < either docker or podman>
+    container_engine: <either docker or podman>
     proxy:
       http_proxy: 
       https_proxy:
@@ -56,6 +56,8 @@ all:
     host_min_root_disk_space: 50 # minimum required disk space before install; value in GB
     tmp_directory: "/tmp"
     bin_directory: "/usr/local/bin"
+    installer_lib: <provide full path for installer_lib direcotry under nephio-ansible-install-offline>
+    blueprint_repos: ["free5gc-packages","nephio-packages"]
     kubectl_version: "1.25.0"
     kubectl_checksum_binary: "sha512:fac91d79079672954b9ae9f80b9845fbf373e1c4d3663a84cc1538f89bf70cb85faee1bcd01b6263449f4a2995e7117e1c85ed8e5f137732650e8635b4ecee09"
     kind_version: "0.17.0"
@@ -82,6 +84,7 @@ Some customizations are required to tailor the installation to your environment.
 - github_username: your GitHub username
 - github_token: GitHub access token to access GitHub [GitHub personal access token](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 - github_organization: (optional) if you use a GitHub organization for the repositories you should add your GitHub organization here, otherwise it uses the GitHub username
+- gitea docker container will be created at runtime.
 - gitea_username: your [gitea](https://gitea.io) (local repository) username
 - gitea_password: your [gitea](https://gitea.io) (local repository) password
 
