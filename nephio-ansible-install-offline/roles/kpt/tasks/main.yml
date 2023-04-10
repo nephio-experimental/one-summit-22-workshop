@@ -3,15 +3,18 @@
 ## SPDX-License-Identifier: Apache-2.0
 
 ---
-- name: Download kpt binary
-  ansible.builtin.get_url:
-    url: "https://github.com/GoogleContainerTools/kpt/releases/download/v{{ kpt_version }}/kpt_{{ host_os }}_{{ host_arch }}"
-    #checksum: "{{ kubectl_checksum_binary }}"
-    dest: "{{ tmp_directory }}/kpt"
-    mode: 0600
-    validate_certs: "{{ validate_certs }}"
-  tags:
+- name: Copy kpt binary to tmp_directory
+  become: true
+  ansible.builtin.copy:
+    src: "{{ installer_lib }}/{{ item }}"
+    dest: "{{ tmp_directory }}/{{ item }}"
+    mode: "0755"
+    owner: "root"
+    group: "root"
+    remote_src: true
+  with_items:
     - kpt
+
 
 - name: Copy kpt binary to destination directory
   become: true
