@@ -27,3 +27,8 @@
   with_items:
     - clab.deb
 
+- name: Remove clab temp dir
+  become: true
+    file:
+      path: "{{ tmp_directory }}/clab"
+      state: absent
