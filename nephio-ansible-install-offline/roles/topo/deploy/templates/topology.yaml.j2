@@ -7,11 +7,14 @@ topology:
   nodes:
     srl:
       kind: srl
-{% for dict_item in clusters %}
-    {{dict_item}}-control-plane:
+{% for clusterName, cluster in clusters.items() %}
+    {{clusterName}}-control-plane:
        kind: ext-container
 {% endfor %}
   links:
-{% for dict_item in clusters %}
-    - endpoints: ["srl:e1-{{ loop.index }}", "{{dict_item}}-control-plane:eth1"]
+{% for clusterName, cluster in clusters.items() %}
+{% set outer_loop = loop %}
+{% for niName, ni in networkInstances.items() %}
+    - endpoints: ["srl:e1-{{ 2 + loop.index + ((outer_loop.index -1) * (networkInstances | length)) }}", "{{clusterName}}-control-plane:eth{{ loop.index }}"]
+{% endfor %}
 {% endfor %}
