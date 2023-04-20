@@ -105,33 +105,35 @@ ansible-galaxy collection install community.docker # required for gitea
 ## Offline installation support
 
 Set installation_mode property in inventory/nephio.yaml to offline to install Nephio offline.
+
 Offline installer is supported for Gitea, for github you need to make sure you have connectivity to your internal github from the VM.
+
 Offline installation is currently supported for - 
-os - linux
-arc - amd64
+- os - linux
+- arc - amd64
 
 Versions supported of offline installation-
 1. kubectl
-download url - https://storage.googleapis.com/kubernetes-release/release/v1.25.0/bin/linux/amd64/kubectl
-version - v1.25.0
+- download url - https://storage.googleapis.com/kubernetes-release/release/v1.25.0/bin/linux/amd64/kubectl
+- version - v1.25.0
 2. kind
-download url - https://kind.sigs.k8s.io/dl/v0.17.0/kind-linux-amd64
-version - v0.17.0
+- download url - https://kind.sigs.k8s.io/dl/v0.17.0/kind-linux-amd64
+- version - v0.17.0
 3. kpt
-download url - https://github.com/GoogleContainerTools/kpt/releases/download/v1.0.0-beta.23/kpt_linux_amd64
-version - v1.0.0-beta.23 
+- download url - https://github.com/GoogleContainerTools/kpt/releases/download/v1.0.0-beta.23/kpt_linux_amd64
+- version - v1.0.0-beta.23 
 4. cni
-download url - https://github.com/containernetworking/plugins/releases/download/v0.8.6/cni-plugins-linux-amd64-v0.8.6.tgz
-version - v0.8.6
+- download url - https://github.com/containernetworking/plugins/releases/download/v0.8.6/cni-plugins-linux-amd64-v0.8.6.tgz
+- version - v0.8.6
 5. clab
-download url -  https://github.com/srl-labs/containerlab/releases/download/v0.38.0/containerlab_0.38.0_linux_amd64.deb
-version - v0.38.0
+- download url -  https://github.com/srl-labs/containerlab/releases/download/v0.38.0/containerlab_0.38.0_linux_amd64.deb
+- version - v0.38.0
 6. free5gc-packages
-Git url - https://github.com/nephio-project/free5gc-packages
-version - 02a209a4557e37b8e81ff1f7f963ded9e36d7b17
+- Git url - https://github.com/nephio-project/free5gc-packages
+- version - 02a209a4557e37b8e81ff1f7f963ded9e36d7b17
 7. nephio-packages
-Git url - https://github.com/nephio-project/nephio-packages
-version - 68883c8727478254f8c1f1e1dd40edf1d53f21d2
+- Git url - https://github.com/nephio-project/nephio-packages
+- version - 68883c8727478254f8c1f1e1dd40edf1d53f21d2
 
 ## deploy nephio environment
 
