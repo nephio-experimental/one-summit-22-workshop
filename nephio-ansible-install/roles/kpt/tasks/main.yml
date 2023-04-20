@@ -12,6 +12,20 @@
     validate_certs: "{{ validate_certs }}"
   tags:
     - kpt
+  when: (installation_mode=='online')
+
+- name: Copy kpt binary to tmp_directory
+  become: true
+  ansible.builtin.copy:
+    src: "{{ installer_lib }}/{{ item }}"
+    dest: "{{ tmp_directory }}/{{ item }}"
+    mode: "0755"
+    owner: "root"
+    group: "root"
+    remote_src: true
+  with_items:
+    - kpt
+  when: (installation_mode=='offline')
 
 - name: Copy kpt binary to destination directory
   become: true
