@@ -11,6 +11,20 @@
     mode: 0600
   tags:
     - kubectl
+  when: (installation_mode=='online')
+
+- name: Copy kubectl binary to tmp_directory
+  become: true
+  ansible.builtin.copy:
+    src: "{{ installer_lib }}/{{ item }}"
+    dest: "{{ tmp_directory }}/{{ item }}"
+    mode: "0755"
+    owner: "root"
+    group: "root"
+    remote_src: true
+  with_items:
+    - kubectl
+  when: (installation_mode=='offline')
 
 - name: Copy kubectl binary to destination directory
   become: true
