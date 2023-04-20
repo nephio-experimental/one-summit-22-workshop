@@ -4,6 +4,7 @@
 
 ---
 - name: Create tmp cni directory
+  become: true
   ansible.builtin.file:
     path: "{{ tmp_directory }}/cni"
     state: directory
@@ -17,8 +18,20 @@
     validate_certs: "{{ validate_certs }}"
   tags:
     - cni
+  when: (installation_mode=='online')
+
+- name: Copy cni binary to tmp_directory
+  become: true
+  ansible.builtin.copy:
+    src: "{{ installer_lib }}/cni-plugins-{{ host_os }}-{{ host_arch }}-v{{ cni_version }}.tgz"
+    dest: "{{ tmp_directory }}"
+    mode: 0600
+  tags: 
+    - cni
+  when: (installation_mode=='offline')
 
 - name: Unarchive cni archive
+  become: true
   ansible.builtin.unarchive:
     src: "{{ tmp_directory }}/cni-plugins-{{ host_os }}-{{ host_arch }}-v{{ cni_version }}.tgz"
     dest: "{{ tmp_directory }}/cni"
