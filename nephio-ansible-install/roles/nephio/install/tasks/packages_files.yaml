@@ -11,8 +11,32 @@
   failed_when:
     - result.rc > 1
     - result.rc == 1 and "already exists" not in result.stderr
+  when: (installation_mode=='online')
+
+- name: Unarchive and copy nephio package
+  block: 
+    - name: Create tmp nephio-packages directory
+      ansible.builtin.file:
+        path: "{{ tmp_directory }}/nephio-packages"
+        state: directory
+        mode: '0755'
+
+    - name: Unarchive nephio packages archive
+      ansible.builtin.unarchive:
+        src: "{{ installer_lib }}/nephio-packages.tar"
+        dest: "{{ tmp_directory }}/nephio-packages"
+        remote_src: true
+
+    - name: Copy {{ item.package }} to tmp_directory
+      ansible.builtin.copy:
+        src: "{{ tmp_directory }}/nephio-packages/nephio-packages/{{ item.package }}"
+        dest: "{{ tmp_directory }}/{{ nephio.install_dir}}"
+        remote_src: true
+  when: (installation_mode == 'offline')
+  become: true
 
 - name: Initialize {{ item.package }}
+  become: true
   shell: kpt fn render {{ item.package }}
   args: 
     chdir: "{{ tmp_directory }}/{{ nephio.install_dir}}"
