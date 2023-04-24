@@ -56,7 +56,7 @@
       ansible.builtin.uri:
         url: http://localhost:3000/api/v1/user/repos
         headers:
-          Authorization: token {{ gitea_token['content'] | b64decode }}
+          Authorization: token {{ giteatoken }}
           Content-Type: application/json
           accept: application/json
         method: POST
@@ -69,7 +69,7 @@
       ansible.builtin.uri:
         url: http://localhost:3000/api/v1/user/repos
         headers:
-          Authorization: token {{ gitea_token['content'] | b64decode }}
+          Authorization: token {{ giteatoken }}
           Content-Type: application/json
           accept: application/json
         method: POST
@@ -120,10 +120,10 @@
         dest: "{{ tmp_directory }}/blueprint/blueprint_push.sh"
 
     - name: push all {{ blueprint_repos.0 }}
-      shell: sh  "{{ tmp_directory }}"/blueprint/blueprint_push.sh "{{ tmp_directory }}"/blueprint/{{ blueprint_repos.0 }} {{ blueprint_repos.0 }} {{ gitea_token['content'] | b64decode }}
+      shell: sh  "{{ tmp_directory }}"/blueprint/blueprint_push.sh "{{ tmp_directory }}"/blueprint/{{ blueprint_repos.0 }} {{ blueprint_repos.0 }} {{ giteatoken }}
 
     - name: push all {{ blueprint_repos.1 }}
-      shell: sh  "{{ tmp_directory }}"/blueprint/blueprint_push.sh "{{ tmp_directory }}"/blueprint/{{ blueprint_repos.1 }} {{ blueprint_repos.1 }} {{ gitea_token['content'] | b64decode }}
+      shell: sh  "{{ tmp_directory }}"/blueprint/blueprint_push.sh "{{ tmp_directory }}"/blueprint/{{ blueprint_repos.1 }} {{ blueprint_repos.1 }} {{ giteatoken }}
 
     - name: Remove blueprint temp dir
       file:
