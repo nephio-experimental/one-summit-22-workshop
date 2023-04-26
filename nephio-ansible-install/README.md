@@ -66,10 +66,10 @@ all:
       install_dir: nephio-install
       packages_url: https://github.com/nephio-project/nephio-packages.git
     clusters:
-      mgmt: {mgmt_subnet: 172.88.0.0/16, pod_subnet: 10.196.0.0/16, svc_subnet: 10.96.0.0/16}
-      edge1: {mgmt_subnet: 172.89.0.0/16, pod_subnet: 10.197.0.0/16, svc_subnet: 10.97.0.0/16}
-      edge2: {mgmt_subnet: 172.90.0.0/16, pod_subnet: 10.198.0.0/16, svc_subnet: 10.98.0.0/16}
-      region1: {mgmt_subnet: 172.91.0.0/16, pod_subnet: 10.199.0.0/16, svc_subnet: 10.99.0.0/16}
+      mgmt: {mgmt_subnet: 172.88.0.0/16, pod_subnet: 10.196.0.0/16, svc_subnet: 10.96.0.0/16, master_iface: eth1}
+      edge1: {mgmt_subnet: 172.89.0.0/16, pod_subnet: 10.197.0.0/16, svc_subnet: 10.97.0.0/16, master_iface: eth1}
+      edge2: {mgmt_subnet: 172.90.0.0/16, pod_subnet: 10.198.0.0/16, svc_subnet: 10.98.0.0/16, master_iface: eth1}
+      region1: {mgmt_subnet: 172.91.0.0/16, pod_subnet: 10.199.0.0/16, svc_subnet: 10.99.0.0/16, master_iface: eth1}
   children:
     vm:
       hosts:
@@ -84,6 +84,7 @@ Some customizations are required to tailor the installation to your environment.
 - github_organization: (optional) if you use a GitHub organization for the repositories you should add your GitHub organization here, otherwise it uses the GitHub username
 - gitea_username: your [gitea](https://gitea.io) (local repository) username
 - gitea_password: your [gitea](https://gitea.io) (local repository) password
+- master_iface: the interface name on the node where the API server is accessible, the default value is `eth1` for KIND clusters deployed by ansible scripts. The value for this field may need to be updated for non-KIND cluster deployments.
 
 Note: You can choose between using remote GitHub repositories or local gitea repositories for your Nephio environment by setting either the GitHub variables or the gitea variables.
 
