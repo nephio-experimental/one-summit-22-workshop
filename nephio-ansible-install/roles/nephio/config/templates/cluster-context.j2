@@ -6,4 +6,4 @@ spec:
   siteCode: {{ item.key }}
   cniConfig:
     cniType: macvlan
-    masterInterface: eth1
+    masterInterface: {{ item.value.master_iface }}
