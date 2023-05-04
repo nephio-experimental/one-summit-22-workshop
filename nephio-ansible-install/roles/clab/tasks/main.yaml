@@ -6,15 +6,17 @@
 - name: installing clab
   become: true
   shell: bash -c "$(wget -qO - https://get.containerlab.dev)"
-  when: validate_certs
+  when: validate_certs and (installation_mode == 'online')
+
+- name: Create clab installation directory
+  become: true
+  file:
+    path: "{{ tmp_directory }}/clab_install"
+    state: directory
+  when:  (not validate_certs) or (installation_mode == 'offline')
 
 - name: Download, configure, and Execute the clabinstaller.sh
   block:
-    - name: Create clab installation directory
-      file:
-        path: "{{ tmp_directory }}/clab_install"
-        state: directory
-
     - name: Download clab script
       ansible.builtin.get_url:
         url: "https://get.containerlab.dev"
@@ -46,7 +48,29 @@
     - name: Execute the clabinstaller.sh
       become: true
       shell: bash -c "{{ tmp_directory }}/clab_install/clabinstaller.sh"    
-  when: not validate_certs
+  when: (not validate_certs) and (installation_mode == 'online')
+  become: true
+
+- name: Copy and Execute the clabinstaller
+  block:
+    - name: Copy clab binary to tmp_directory
+      become: true
+      ansible.builtin.copy:
+        src: "{{ installer_lib }}/{{ item }}"
+        dest: "{{ tmp_directory }}/clab_install/{{ item }}"
+        mode: "0755"
+        owner: "root"
+        group: "root"
+        remote_src: true
+      with_items:
+        - clab.deb
+
+    - name: Installing clab
+      become: true
+      shell: "dpkg -i {{ tmp_directory }}/clab_install/{{ item }}"
+      with_items:
+        - clab.deb      
+  when: (installation_mode == 'offline')
   become: true
 
 - name: Remove the clabinstaller.sh
@@ -54,4 +78,4 @@
   file:
     path: "{{ tmp_directory }}/clab_install"
     state: absent
-  when: not validate_certs
+  when: (not validate_certs) or (installation_mode == 'offline')

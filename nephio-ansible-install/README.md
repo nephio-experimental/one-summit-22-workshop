@@ -39,12 +39,13 @@ all:
     github_username: <GitHub username>
     github_token: <GitHub personal access token>
     github_organization: <optional, if a GitHub organization is used this should be filled out with the GitHub organization>
-    gitea_username: <gitea username>
-    gitea_password: <gitea password>
+    gitea_username: nephio #keep this as nephio, user will be created at runtime
+    gitea_password: <gitea password> #desired password for user nephio
     dockerhub_username: <dockerhub username>
     dockerhub_token: <dockerhub token or password>
     validate_certs: true <change this to false if you want to avoid ssl/tls check>
     container_engine: < either docker or podman>
+    installation_mode: online #online/offline
     proxy:
       http_proxy: 
       https_proxy:
@@ -56,6 +57,8 @@ all:
     host_min_root_disk_space: 50 # minimum required disk space before install; value in GB
     tmp_directory: "/tmp"
     bin_directory: "/usr/local/bin"
+    installer_lib: <provide full path for installer_lib direcotry under nephio-ansible-install-offline>
+    blueprint_repos: ["free5gc-packages","nephio-packages"]
     kubectl_version: "1.25.0"
     kubectl_checksum_binary: "sha512:fac91d79079672954b9ae9f80b9845fbf373e1c4d3663a84cc1538f89bf70cb85faee1bcd01b6263449f4a2995e7117e1c85ed8e5f137732650e8635b4ecee09"
     kind_version: "0.17.0"
@@ -82,6 +85,7 @@ Some customizations are required to tailor the installation to your environment.
 - github_username: your GitHub username
 - github_token: GitHub access token to access GitHub [GitHub personal access token](https://docs.github.com/en/enterprise-server@3.4/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 - github_organization: (optional) if you use a GitHub organization for the repositories you should add your GitHub organization here, otherwise it uses the GitHub username
+- gitea docker container will be created at runtime.
 - gitea_username: your [gitea](https://gitea.io) (local repository) username
 - gitea_password: your [gitea](https://gitea.io) (local repository) password
 - master_iface: the interface name on the node where the API server is accessible, the default value is `eth1` for KIND clusters deployed by ansible scripts. The value for this field may need to be updated for non-KIND cluster deployments.
@@ -99,6 +103,38 @@ pip install pygithub
 ansible-galaxy collection install community.general
 ansible-galaxy collection install community.docker # required for gitea
 ```
+## Offline installation support
+
+Set installation_mode property in inventory/nephio.yaml to offline to install Nephio offline.
+
+Offline installer is supported for Gitea, for github you need to make sure you have connectivity to your internal github from the VM.
+
+Offline installation is currently supported for - 
+- os - linux
+- arc - amd64
+
+Versions supported of offline installation-
+1. kubectl
+- download url - https://storage.googleapis.com/kubernetes-release/release/v1.25.0/bin/linux/amd64/kubectl
+- version - v1.25.0
+2. kind
+- download url - https://kind.sigs.k8s.io/dl/v0.17.0/kind-linux-amd64
+- version - v0.17.0
+3. kpt
+- download url - https://github.com/GoogleContainerTools/kpt/releases/download/v1.0.0-beta.23/kpt_linux_amd64
+- version - v1.0.0-beta.23 
+4. cni
+- download url - https://github.com/containernetworking/plugins/releases/download/v0.8.6/cni-plugins-linux-amd64-v0.8.6.tgz
+- version - v0.8.6
+5. clab
+- download url -  https://github.com/srl-labs/containerlab/releases/download/v0.38.0/containerlab_0.38.0_linux_amd64.deb
+- version - v0.38.0
+6. free5gc-packages
+- Git url - https://github.com/nephio-project/free5gc-packages
+- version - 02a209a4557e37b8e81ff1f7f963ded9e36d7b17
+7. nephio-packages
+- Git url - https://github.com/nephio-project/nephio-packages
+- version - 68883c8727478254f8c1f1e1dd40edf1d53f21d2
 
 ## deploy nephio environment
 

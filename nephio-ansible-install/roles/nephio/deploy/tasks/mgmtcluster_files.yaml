@@ -61,7 +61,7 @@
   when:
     - gitea_username is defined
 
-- name: configure nephio ingress
+- name: configure nephio ingress online
   block:
     - name: label the master node to indicate ingress ready (needed for non-KIND clusters)
       shell: |
@@ -70,6 +70,18 @@
       shell: |
         kubectl --kubeconfig ~/.kube/mgmt-config \
           apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+  when: (installation_mode=='online')
+
+- name: configure nephio ingress offline
+  block:
+    - name: label the master node to indicate ingress ready (needed for non-KIND clusters)
+      shell: |
+        kubectl --kubeconfig ~/.kube/mgmt-config label nodes -l node-role.kubernetes.io/control-plane ingress-ready=true
+    - name: apply the ingress resource to nephio management cluster
+      shell: |
+        kubectl --kubeconfig ~/.kube/mgmt-config \
+          apply -f "{{ installer_lib }}/kind_deploy.yaml"
+  when: (installation_mode=='offline')
 
 - name: wait for ingress controller
   shell: |

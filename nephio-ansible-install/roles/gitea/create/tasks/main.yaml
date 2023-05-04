@@ -20,7 +20,7 @@
     - gitea_password is defined
 
 - block:
-    - name: Wait for gitea to initialise
+    - name: Wait for gitea to initialize
       ansible.builtin.wait_for:
         path: /home/{{ cloud_user }}/gitea/ssh
 
@@ -49,3 +49,84 @@
   when:
     - gitea_username is defined
     - gitea_password is defined
+
+- name: Create and configure blueprint repos
+  block:
+    - name: Create blueprint repo "{{ blueprint_repos.0 }}"
+      ansible.builtin.uri:
+        url: http://localhost:3000/api/v1/user/repos
+        headers:
+          Authorization: token {{ giteatoken }}
+          Content-Type: application/json
+          accept: application/json
+        method: POST
+        body: {'auto_init': true, 'name': "{{ blueprint_repos.0 }}"}
+        status_code: 201
+        body_format: json
+      register: result
+
+    - name: Create blueprint repo "{{ blueprint_repos.1 }}
+      ansible.builtin.uri:
+        url: http://localhost:3000/api/v1/user/repos
+        headers:
+          Authorization: token {{ giteatoken }}
+          Content-Type: application/json
+          accept: application/json
+        method: POST
+        body: {'auto_init': true, 'name': "{{ blueprint_repos.1 }}"}
+        status_code: 201
+        body_format: json
+      register: result
+
+    - name: Create blueprint directory
+      file:
+        path: "{{ tmp_directory }}/blueprint"
+        state: directory
+
+    - name: Copy {{ blueprint_repos.0 }} to tmp_directory
+      ansible.builtin.copy:
+        src: "{{ installer_lib }}/{{ item }}.tar"
+        dest: "{{ tmp_directory }}/blueprint/{{ item }}.tar"
+        remote_src: true
+      with_items:
+        - "{{ blueprint_repos.0 }}"
+
+    - name: Unarchive {{ blueprint_repos.0 }} archive
+      ansible.builtin.unarchive:
+        src: "{{ tmp_directory }}/blueprint/{{ item }}.tar"
+        dest: "{{ tmp_directory }}/blueprint/"
+        remote_src: true
+      with_items:
+        - "{{ blueprint_repos.0 }}"
+
+    - name: Copy {{ blueprint_repos.1 }} to tmp_directory
+      ansible.builtin.copy:
+        src: "{{ installer_lib }}/{{ item }}.tar"
+        dest: "{{ tmp_directory }}/blueprint/{{ item }}.tar"
+      with_items:
+        - "{{ blueprint_repos.1 }}"
+
+    - name: Unarchive {{ blueprint_repos.1 }} archive
+      ansible.builtin.unarchive:
+        src: "{{ tmp_directory }}/blueprint/{{ item }}.tar"
+        dest: "{{ tmp_directory }}/blueprint/"
+        remote_src: true
+      with_items:
+        - "{{ blueprint_repos.1 }}"
+
+    - name: Copy push script to tmp_directory
+      ansible.builtin.copy:
+        src: "{{ installer_lib }}/blueprint_push.sh"
+        dest: "{{ tmp_directory }}/blueprint/blueprint_push.sh"
+
+    - name: push all {{ blueprint_repos.0 }}
+      shell: sh  "{{ tmp_directory }}"/blueprint/blueprint_push.sh "{{ tmp_directory }}"/blueprint/{{ blueprint_repos.0 }} {{ blueprint_repos.0 }} {{ giteatoken }}
+
+    - name: push all {{ blueprint_repos.1 }}
+      shell: sh  "{{ tmp_directory }}"/blueprint/blueprint_push.sh "{{ tmp_directory }}"/blueprint/{{ blueprint_repos.1 }} {{ blueprint_repos.1 }} {{ giteatoken }}
+
+    - name: Remove blueprint temp dir
+      file:
+        path: "{{ tmp_directory }}/blueprint"
+        state: absent
+  when: (gitea_username is defined) and (installation_mode=='offline')
