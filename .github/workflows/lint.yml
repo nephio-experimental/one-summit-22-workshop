@@ -16,7 +16,7 @@ jobs:
   check-super-linter:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v3.6.0
       - name: Check super-linter
         uses: github/super-linter@v5.0.0
         env:
